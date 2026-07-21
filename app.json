@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "evangelism-app",
+    "name": "Moisson",
     "slug": "evangelism-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -35,10 +35,29 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#09090b"
           }
         }
-      ]
+      ],
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Moisson enregistre les convertis dans vos contacts."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Moisson accède à vos photos pour définir votre photo de profil."
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Moisson utilise Face ID pour déverrouiller l'application."
+        }
+      ],
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true,
