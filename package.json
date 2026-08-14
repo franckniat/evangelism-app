@@ -15,7 +15,8 @@
     "typecheck": "turbo run typecheck",
     "mobile": "bun run --filter @moisson/mobile dev",
     "web": "bun run --filter @moisson/web dev",
-    "backend": "bun run --filter @moisson/backend dev"
+    "backend": "bun run --filter @moisson/backend dev",
+    "desktop": "bun run --filter @moisson/desktop dev"
   },
   "devDependencies": {
     "turbo": "^2.5.0"
