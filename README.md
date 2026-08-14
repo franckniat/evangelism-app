@@ -4,7 +4,7 @@
 
 **Application collaborative de suivi d'évangélisation — mobile, web et desktop.**
 
-[![Licence](https://img.shields.io/badge/licence-Apache--2.0-blue.svg)](LICENSE)
+[![Licence](https://img.shields.io/badge/licence-AGPL--3.0-blue.svg)](LICENSE)
 [![Expo](https://img.shields.io/badge/Expo-SDK%2054-000020.svg)](https://expo.dev)
 [![Next.js](https://img.shields.io/badge/Next.js-16.3-black.svg)](https://nextjs.org)
 [![AdonisJS](https://img.shields.io/badge/AdonisJS-7-5A45FF.svg)](https://adonisjs.com)
@@ -135,10 +135,32 @@ Les contributions sont bienvenues. Quelques conventions :
 
 ## Licence
 
-Distribué sous licence **[Apache-2.0](LICENSE)**.
+Distribué sous licence **[AGPL-3.0-only](LICENSE)** (GNU Affero General Public License, version 3).
 
-Vous pouvez librement utiliser, modifier et redistribuer ce logiciel, y compris à des fins
-commerciales, à condition de conserver les mentions de licence et de copyright. La licence inclut une
-concession de brevets explicite et fournit le logiciel « en l'état », sans garantie.
+Vous pouvez librement utiliser, étudier, modifier et redistribuer ce logiciel. En contrepartie, toute
+version modifiée doit rester sous la même licence — **y compris si vous l'exploitez comme service en
+ligne sans en distribuer le code**. C'est la clause qui distingue l'AGPL : elle garantit qu'un service
+dérivé de Moisson reste ouvert et vérifiable, ce qui compte particulièrement pour une application qui
+manipule des données personnelles sensibles.
 
-Copyright 2026 Franck Niat.
+> ⚠️ Si vous hébergez votre propre instance, l'article 13 de la licence vous oblige à proposer à vos
+> utilisateurs un moyen d'obtenir le code source de la version que vous exécutez.
+
+La licence ne régit que le **code**. L'usage des **données** saisies dans l'application relève des
+conditions d'utilisation de l'instance concernée et du droit applicable à la protection des données
+personnelles.
+
+```
+Moisson — application collaborative de suivi d'évangélisation
+Copyright (C) 2026 Franck Niat
+
+Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier selon
+les termes de la GNU Affero General Public License telle que publiée par la Free Software
+Foundation, en sa version 3.
+
+Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE, ni
+explicite ni implicite. Voyez la GNU Affero General Public License pour plus de détails.
+
+Vous devriez avoir reçu une copie de la licence avec ce programme. Sinon, voyez
+<https://www.gnu.org/licenses/>.
+```

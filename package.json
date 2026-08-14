@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "description": "Moisson — application collaborative de suivi d'évangélisation (mobile, web, desktop)",
+  "license": "AGPL-3.0-only",
   "workspaces": [
     "apps/*",
     "packages/*"
