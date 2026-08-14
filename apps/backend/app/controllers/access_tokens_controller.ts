@@ -1,5 +1,6 @@
 import User from '#models/user'
 import TokenService from '#services/token_service'
+import { sessionContextFrom } from '#services/session_context'
 import type { HttpContext } from '@adonisjs/core/http'
 import UserTransformer from '#transformers/user_transformer'
 import { loginValidator, logoutValidator, refreshValidator } from '#validators/user'
@@ -12,7 +13,10 @@ export default class AccessTokensController {
     const { email, password } = await request.validateUsing(loginValidator)
 
     const user = await User.verifyCredentials(email, password)
-    const { accessToken, refreshToken } = await TokenService.issuePair(user)
+    const { accessToken, refreshToken } = await TokenService.issuePair(
+      user,
+      sessionContextFrom(request)
+    )
 
     return serialize({
       user: UserTransformer.transform(user),
@@ -30,7 +34,10 @@ export default class AccessTokensController {
   async refresh({ request, serialize }: HttpContext) {
     const { refreshToken: presented } = await request.validateUsing(refreshValidator)
 
-    const { user, accessToken, refreshToken } = await TokenService.rotate(presented)
+    const { user, accessToken, refreshToken } = await TokenService.rotate(
+      presented,
+      sessionContextFrom(request)
+    )
 
     return serialize({
       user: UserTransformer.transform(user),
@@ -45,18 +52,23 @@ export default class AccessTokensController {
   async destroy({ auth, request }: HttpContext) {
     const { refreshToken } = await request.validateUsing(logoutValidator)
     const user = auth.getUserOrFail()
-
-    if (user.currentAccessToken) {
-      await User.accessTokens.delete(user, user.currentAccessToken.identifier)
-    }
+    const familyId = user.currentAccessToken?.name
 
     /**
-     * Without the refresh token we can revoke the access token but not the
-     * session behind it, which would stay refreshable until it expires. The
-     * client is expected to send it.
+     * The access token names its own session, so signing out no longer
+     * depends on the client still holding its refresh token. The body value
+     * remains accepted as a fallback.
      */
-    if (refreshToken) {
-      await TokenService.revokeSession(refreshToken)
+    if (familyId) {
+      await TokenService.revokeSessionById(user, familyId)
+    } else {
+      if (user.currentAccessToken) {
+        await User.accessTokens.delete(user, user.currentAccessToken.identifier)
+      }
+
+      if (refreshToken) {
+        await TokenService.revokeSession(refreshToken)
+      }
     }
 
     return {

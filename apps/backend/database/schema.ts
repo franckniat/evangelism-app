@@ -50,10 +50,12 @@ export class RefreshTokenSchema extends BaseModel {
     'familyId',
     'hash',
     'id',
+    'ipAddress',
     'revokedAt',
     'revokedReason',
     'updatedAt',
     'usedAt',
+    'userAgent',
     'userId',
   ] as const
   $columns = RefreshTokenSchema.$columns
@@ -67,6 +69,8 @@ export class RefreshTokenSchema extends BaseModel {
   declare hash: string
   @column({ isPrimary: true })
   declare id: number
+  @column()
+  declare ipAddress: string | null
   @column.dateTime()
   declare revokedAt: DateTime | null
   @column()
@@ -75,6 +79,8 @@ export class RefreshTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
   @column.dateTime()
   declare usedAt: DateTime | null
+  @column()
+  declare userAgent: string | null
   @column()
   declare userId: number
 }

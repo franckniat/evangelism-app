@@ -42,3 +42,13 @@ export const refreshValidator = vine.create({
 export const logoutValidator = vine.create({
   refreshToken: vine.string().optional(),
 })
+
+/**
+ * Validator for the session identifier carried in the URL.
+ *
+ * `family_id` is a Postgres `uuid` column: handing it anything else raises a
+ * database error, which would surface as a 500 where a 404 is meant.
+ */
+export const sessionIdValidator = vine.create({
+  id: vine.string().uuid(),
+})

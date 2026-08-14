@@ -36,6 +36,14 @@ router
       .group(() => {
         router.get('profile', [controllers.Profile, 'show'])
         router.post('logout', [controllers.AccessTokens, 'destroy'])
+
+        /**
+         * Appareils connectés. Déclaré avant la route paramétrée pour que
+         * « revoke-others » ne soit pas interprété comme un identifiant.
+         */
+        router.get('sessions', [controllers.Sessions, 'index'])
+        router.post('sessions/revoke-others', [controllers.Sessions, 'destroyOthers'])
+        router.delete('sessions/:id', [controllers.Sessions, 'destroy'])
       })
       .prefix('account')
       .as('profile')
