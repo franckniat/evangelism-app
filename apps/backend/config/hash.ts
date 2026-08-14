@@ -3,63 +3,70 @@ import { defineConfig, drivers } from '@adonisjs/core/hash'
 /**
  * Hashing configuration.
  *
- * This starter uses Node.js scrypt under the hood.
- * Node.js reference: https://nodejs.org/api/crypto.html#cryptoscryptpassword-salt-keylen-options-callback
+ * Passwords are hashed with Argon2id, the variant recommended by OWASP for
+ * password storage: it resists both GPU cracking (memory-hard) and
+ * side-channel attacks (data-independent first pass).
+ *
+ * Moisson stores the identities of people who never signed up for it, so a
+ * compromised account is a compromised address book. The cost parameters
+ * below are the OWASP baseline, not the library defaults.
  */
 const hashConfig = defineConfig({
   /**
    * Default hasher used by the application.
    */
-  default: 'scrypt',
+  default: 'argon',
 
   list: {
-    /**
-     * Scrypt is memory-hard, which makes brute-force attacks more expensive.
-     */
-    scrypt: drivers.scrypt({
+    argon: drivers.argon2({
       /**
-       * Work factor (Node alias: N / cost).
-       * Higher values increase security and CPU+memory usage.
-       *
-       * Tuning guideline:
-       * - Start with 16384.
-       * - Increase gradually (for example 32768) and benchmark login/signup latency.
-       * - Keep values practical for your slowest production machine.
-       *
-       * Node constraint: value must be a power of two greater than 1.
+       * Argon2id — the hybrid variant. Do not switch to "i" or "d" without
+       * a specific reason: "id" is the one OWASP recommends for passwords.
        */
-      cost: 16384,
+      variant: 'id',
 
       /**
-       * Block size (Node alias: r / blockSize).
-       * Increases memory and CPU linearly.
+       * Memory cost in KiB (Argon2 alias: m).
+       * This is what makes parallel GPU attacks expensive.
        *
        * Tuning guideline:
-       * - Keep 8 unless you have a measured reason to change it.
-       * - Raise only with benchmark data, because memory usage grows quickly.
+       * - 19456 (19 MiB) is the OWASP baseline paired with iterations=2.
+       * - Raise it before raising iterations: memory hurts attackers more.
+       * - Remember this much memory is held per concurrent login. Combined
+       *   with rate limiting, keep it comfortable for the smallest machine
+       *   the API will ever run on.
        */
-      blockSize: 8,
+      memory: 19456,
 
       /**
-       * Parallelization (Node alias: p / parallelization).
-       * Controls how many independent computations are performed.
+       * Number of passes over memory (Argon2 alias: t).
+       * The driver rejects values below 2.
        *
        * Tuning guideline:
-       * - Keep 1 for most applications.
-       * - Increase only after load testing if your infrastructure benefits from it.
+       * - Benchmark login latency and aim for roughly 100 ms on production
+       *   hardware; raise this until you get there.
        */
-      parallelization: 1,
+      iterations: 2,
 
       /**
-       * Maximum memory limit in bytes (Node alias: maxmem / maxMemory).
-       * Hashing throws if the estimated memory usage is above this limit.
-       * Node documents the check as approximately: 128 * N * r > maxmem.
+       * Parallelism (Argon2 alias: p).
        *
        * Tuning guideline:
-       * - Keep this aligned with your cost/blockSize choices.
-       * - Increase carefully on memory-constrained environments.
+       * - Keep 1, as OWASP recommends. Raising it multiplies CPU usage per
+       *   login without meaningfully slowing an attacker who is already
+       *   parallelising across many candidate passwords.
        */
-      maxMemory: 33554432,
+      parallelism: 1,
+
+      /**
+       * Salt size in bytes. 16 is standard; there is no reason to lower it.
+       */
+      saltSize: 16,
+
+      /**
+       * Output length in bytes.
+       */
+      hashLength: 32,
     }),
   },
 })
