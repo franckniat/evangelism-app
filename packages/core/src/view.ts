@@ -1,11 +1,11 @@
 /**
  * Décoration d'un converti en modèle d'affichage (initiales, libellés, statut).
  */
-import type { Dict, Lang } from '@/constants/i18n';
-import { statusStyle, STATUS_LABEL } from '@/constants/status';
-import type { AppColors } from '@/constants/theme';
-import { dueColor, dueLabel, taskState, type TaskState } from '@/lib/dates';
-import type { Convert } from '@/lib/types';
+import type { Dict, Lang } from './i18n';
+import { statusStyle, STATUS_LABEL } from './status';
+import type { AppColors } from './theme';
+import { dueColor, dueLabel, taskState, type TaskState } from './dates';
+import type { Convert } from './types';
 
 export function initials(c: Pick<Convert, 'prenom' | 'nom'>): string {
   return ((c.prenom[0] || '') + (c.nom[0] || '')).toUpperCase();

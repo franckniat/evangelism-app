@@ -48,3 +48,15 @@ app-example
 .agents/
 .claude/
 skills-lock.json
+
+# monorepo / turborepo
+.turbo/
+
+# Next.js (apps/web)
+.next/
+out/
+next-env.d.ts
+
+# Tauri (apps/desktop)
+apps/desktop/src-tauri/target/
+apps/desktop/src-tauri/gen/

@@ -1,0 +1,7 @@
+# Linker « hoisted » : node_modules à plat (comme npm/yarn), au lieu du store
+# isolé par défaut de Bun pour les workspaces.
+#  1. évite les chemins > 260 caractères sur Windows (échecs copyfile sur
+#     react-native & co) ;
+#  2. c'est la disposition attendue par Metro (Expo) en monorepo.
+[install]
+linker = "hoisted"

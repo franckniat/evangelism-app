@@ -2,9 +2,9 @@
  * Calcul des échéances de visite à partir de la date ISO `nextVisit`,
  * reprenant `taskState` / `dueLabel` / `dueColor` du prototype.
  */
-import type { AppColors } from '@/constants/theme';
-import type { Dict } from '@/constants/i18n';
-import type { Convert } from '@/lib/types';
+import type { AppColors } from './theme';
+import type { Dict } from './i18n';
+import type { Convert } from './types';
 
 export type TaskState = 'todo' | 'late' | 'done';
 

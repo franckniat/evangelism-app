@@ -1,4 +1,4 @@
-import type { StatusKey } from '@/constants/status';
+import type { StatusKey } from './status';
 
 export type Sexe = 'H' | 'F';
 
