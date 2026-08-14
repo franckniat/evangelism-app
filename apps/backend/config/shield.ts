@@ -7,14 +7,21 @@ const shieldConfig = defineConfig({
    */
   csp: {
     /**
-     * Enable the Content-Security-Policy header.
+     * The API only ever answers JSON, so a CSP has little to constrain. It is
+     * enabled anyway as a cheap backstop: should a route ever return HTML —
+     * an error page, a future preview — nothing in it may load or execute.
      */
-    enabled: false,
+    enabled: true,
 
     /**
-     * Per-resource CSP directives.
+     * Deny everything. Widen only for a route that genuinely serves a page.
      */
-    directives: {},
+    directives: {
+      defaultSrc: [`'none'`],
+      frameAncestors: [`'none'`],
+      baseUri: [`'none'`],
+      formAction: [`'none'`],
+    },
 
     /**
      * Report violations without blocking resources.
@@ -28,7 +35,14 @@ const shieldConfig = defineConfig({
    */
   csrf: {
     /**
-     * Enable CSRF token verification for state-changing requests.
+     * Left off deliberately, and it is not an oversight.
+     *
+     * CSRF protects flows where the browser attaches credentials on its own —
+     * cookies. This API authenticates with a Bearer token that a client has
+     * to attach explicitly, so a cross-site request carries no credentials
+     * and has nothing to forge.
+     *
+     * ⚠️ Turn this on the day any route accepts cookie-based authentication.
      */
     enabled: false,
 

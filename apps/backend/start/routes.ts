@@ -10,6 +10,7 @@
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 import { controllers } from '#generated/controllers'
+import { throttleAuth, throttleSessions, throttleSignup } from '#start/limiter'
 
 router.get('/', () => {
   return { hello: 'world' }
@@ -19,15 +20,15 @@ router
   .group(() => {
     router
       .group(() => {
-        router.post('signup', [controllers.NewAccount, 'store'])
-        router.post('login', [controllers.AccessTokens, 'store'])
+        router.post('signup', [controllers.NewAccount, 'store']).use(throttleSignup)
+        router.post('login', [controllers.AccessTokens, 'store']).use(throttleAuth)
 
         /**
          * Unauthenticated on purpose: it must stay reachable once the access
          * token has expired. The refresh token carried in the body is the
          * credential.
          */
-        router.post('refresh', [controllers.AccessTokens, 'refresh'])
+        router.post('refresh', [controllers.AccessTokens, 'refresh']).use(throttleAuth)
       })
       .prefix('auth')
       .as('auth')
@@ -47,6 +48,6 @@ router
       })
       .prefix('account')
       .as('profile')
-      .use(middleware.auth())
+      .use([middleware.auth(), throttleSessions])
   })
   .prefix('/api/v1')

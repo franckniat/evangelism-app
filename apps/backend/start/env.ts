@@ -29,4 +29,10 @@ export default await Env.create(new URL('../', import.meta.url), {
   DATABASE_URL: Env.schema.secret(),
   DB_SSL: Env.schema.boolean.optional(),
   DB_POOL_MAX: Env.schema.number.optional(),
+
+  // Limitation de débit
+  LIMITER_STORE: Env.schema.enum(['database', 'memory'] as const),
+
+  // CORS — origines autorisées en production, séparées par des virgules
+  CORS_ORIGIN: Env.schema.string.optional(),
 })

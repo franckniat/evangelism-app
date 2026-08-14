@@ -3,7 +3,17 @@ import TokenService from '#services/token_service'
 import { sessionContextFrom } from '#services/session_context'
 import type { HttpContext } from '@adonisjs/core/http'
 import UserTransformer from '#transformers/user_transformer'
+import limiter from '@adonisjs/limiter/services/main'
 import { loginValidator, logoutValidator, refreshValidator } from '#validators/user'
+
+/**
+ * Failed sign-in attempts, counted per account.
+ */
+const loginThrottle = limiter.use({
+  requests: 5,
+  duration: '15 mins',
+  blockDuration: '15 mins',
+})
 
 export default class AccessTokensController {
   /**
@@ -12,7 +22,24 @@ export default class AccessTokensController {
   async store({ request, serialize }: HttpContext) {
     const { email, password } = await request.validateUsing(loginValidator)
 
-    const user = await User.verifyCredentials(email, password)
+    /**
+     * Only failures are charged, and a success clears the counter — so a
+     * person typing their own password wrong twice is never affected.
+     *
+     * Keyed on the account rather than the address: per-IP limits are close
+     * to meaningless behind carrier NAT, where thousands of users share one
+     * address. The trade-off is that someone hammering a known e-mail can
+     * lock its owner out for the block duration; that is why the block is
+     * short, and why it exists alongside Argon2id rather than instead of it.
+     */
+    const [throttled, user] = await loginThrottle.penalize(`login_${email.toLowerCase()}`, () =>
+      User.verifyCredentials(email, password)
+    )
+
+    if (throttled) {
+      throw throttled
+    }
+
     const { accessToken, refreshToken } = await TokenService.issuePair(
       user,
       sessionContextFrom(request)
