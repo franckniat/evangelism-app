@@ -24,3 +24,21 @@ export const loginValidator = vine.create({
   email: email(),
   password: vine.string(),
 })
+
+/**
+ * Validator for exchanging a refresh token against a new token pair
+ */
+export const refreshValidator = vine.create({
+  refreshToken: vine.string(),
+})
+
+/**
+ * Validator to use when signing out.
+ *
+ * The refresh token is optional: a client that already lost it must still be
+ * able to log out, otherwise it keeps retrying with a credential it is trying
+ * to get rid of.
+ */
+export const logoutValidator = vine.create({
+  refreshToken: vine.string().optional(),
+})

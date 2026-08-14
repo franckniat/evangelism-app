@@ -43,6 +43,42 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class RefreshTokenSchema extends BaseModel {
+  static $columns = [
+    'createdAt',
+    'expiresAt',
+    'familyId',
+    'hash',
+    'id',
+    'revokedAt',
+    'revokedReason',
+    'updatedAt',
+    'usedAt',
+    'userId',
+  ] as const
+  $columns = RefreshTokenSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.dateTime()
+  declare expiresAt: DateTime
+  @column()
+  declare familyId: string
+  @column()
+  declare hash: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column.dateTime()
+  declare revokedAt: DateTime | null
+  @column()
+  declare revokedReason: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column.dateTime()
+  declare usedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
 export class UserSchema extends BaseModel {
   static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
   $columns = UserSchema.$columns

@@ -21,6 +21,13 @@ router
       .group(() => {
         router.post('signup', [controllers.NewAccount, 'store'])
         router.post('login', [controllers.AccessTokens, 'store'])
+
+        /**
+         * Unauthenticated on purpose: it must stay reachable once the access
+         * token has expired. The refresh token carried in the body is the
+         * credential.
+         */
+        router.post('refresh', [controllers.AccessTokens, 'refresh'])
       })
       .prefix('auth')
       .as('auth')
