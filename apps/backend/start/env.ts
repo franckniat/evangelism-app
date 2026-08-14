@@ -33,6 +33,9 @@ export default await Env.create(new URL('../', import.meta.url), {
   // Limitation de débit
   LIMITER_STORE: Env.schema.enum(['database', 'memory'] as const),
 
+  // File de travaux
+  QUEUE_ENABLED: Env.schema.boolean.optional(),
+
   // CORS — origines autorisées en production, séparées par des virgules
   CORS_ORIGIN: Env.schema.string.optional(),
 })
