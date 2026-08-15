@@ -15,31 +15,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  qualite:
-    name: Types et style
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.3.14
-
-      - name: Installer les dépendances
-        run: bun install --frozen-lockfile
-
-      - name: Vérifier les types
-        run: bun run typecheck
-
-      - name: Analyser le style
-        run: bun run lint
-
-  tests:
-    name: Tests
+  verification:
+    name: Types, style et tests
     runs-on: ubuntu-latest
 
-    # Base dédiée à la CI. Les tests d'AdonisJS remettent la base à zéro :
-    # elle ne doit jamais être partagée avec autre chose.
+    # Base dédiée à la CI. Les utilitaires de test d'AdonisJS remettent la
+    # base à zéro : elle ne doit jamais être partagée avec autre chose.
     services:
       postgres:
         image: postgres:17
@@ -56,7 +37,7 @@ jobs:
           --health-retries 5
 
     env:
-      NODE_ENV: test
+      NODE_ENV: development
       TZ: UTC
       PORT: 3333
       HOST: localhost
@@ -67,8 +48,8 @@ jobs:
       DB_SSL: false
       # En mémoire : les compteurs ne doivent pas fuir d'un test à l'autre.
       LIMITER_STORE: memory
-      # Aucun worker : les travaux de fond ne doivent pas s'exécuter
-      # derrière les assertions.
+      # Aucun worker : les travaux de fond ne doivent pas s'exécuter derrière
+      # les assertions, ni pendant la génération du registre ci-dessous.
       QUEUE_ENABLED: false
 
     steps:
@@ -82,8 +63,38 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Générer une clé d'application
-        working-directory: apps/backend
         run: echo "APP_KEY=$(openssl rand -base64 32)" >> "$GITHUB_ENV"
+
+      # `.adonisjs/` n'est pas versionné : contrôleurs, événements et
+      # registre de routes sont générés. Sans eux, `start/routes.ts` ne
+      # résout pas ses imports et le typecheck échoue.
+      - name: Générer les fichiers du serveur
+        working-directory: apps/backend
+        run: node ace build --ignore-ts-errors
+
+      # Le registre de routes de Tuyau ne peut être produit que par un
+      # serveur qui démarre et énumère ses routes — `build` ne le fait pas.
+      # On en lance donc un le temps qu'il écrive le fichier, puis on l'arrête.
+      - name: Générer le registre de routes
+        working-directory: apps/backend
+        run: |
+          node ace serve > /tmp/serve.log 2>&1 &
+          for _ in $(seq 1 90); do
+            [ -f .adonisjs/client/registry/schema.d.ts ] && break
+            sleep 1
+          done
+          pkill -f "ace serve" || true
+          if [ ! -f .adonisjs/client/registry/schema.d.ts ]; then
+            echo "Registre non généré. Journal du serveur :"
+            cat /tmp/serve.log
+            exit 1
+          fi
+
+      - name: Vérifier les types
+        run: bun run typecheck
+
+      - name: Analyser le style
+        run: bun run lint
 
       - name: Appliquer les migrations
         working-directory: apps/backend
@@ -96,8 +107,9 @@ jobs:
             node ace test
           else
             echo "Aucun test pour l'instant."
-            echo "La base PostgreSQL ci-dessus attend les suites de #18, #19, #20 et #21,"
-            echo "qui ne sont pour l'heure vérifiées que par des scripts jetables."
+            echo "La base PostgreSQL ci-dessus attend les suites des jetons,"
+            echo "sessions, limites et file de travaux, qui ne sont pour"
+            echo "l'heure vérifiés que par des scripts jetables."
           fi
 
   secrets:
@@ -107,7 +119,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           # Historique complet : un secret publié puis retiré au commit
-          # suivant reste présent — et donc compromis.
+          # suivant reste présent dans les révisions — et donc compromis.
           fetch-depth: 0
 
       - name: Rechercher des secrets
