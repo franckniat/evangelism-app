@@ -110,6 +110,41 @@ Copiez `.env.example` vers `.env` :
 > applications distribuées. N'y placez jamais de secret : clés d'API privées, mots de passe ou jetons
 > d'administration doivent rester côté serveur uniquement.
 
+Le serveur a sa propre configuration : copiez `apps/backend/.env.example` vers `apps/backend/.env`.
+Chaque variable y est documentée. Les principales :
+
+| Variable | Rôle |
+|---|---|
+| `APP_KEY` | Clé de chiffrement de l'application. **Différente par environnement.** |
+| `DATABASE_URL` | Chaîne de connexion PostgreSQL — contient un mot de passe |
+| `DB_SSL` | Vérification du certificat. `true` partout sauf serveur local |
+| `LIMITER_STORE` | Support de la limitation de débit (`database` / `memory`) |
+| `QUEUE_ENABLED` | Active les workers de la file de travaux |
+| `CORS_ORIGIN` | Origines autorisées en production, séparées par des virgules |
+
+Les variables sont **validées au démarrage** : une configuration incomplète fait échouer le serveur
+immédiatement plutôt que de le laisser tourner à moitié.
+
+### Environnements
+
+| | Base de données | Limitation | File | TLS |
+|---|---|---|---|---|
+| **Développement** | Postgres local | `database` | active | `DB_SSL=false` accepté |
+| **Test** | **base séparée** | `memory` | désactivée | — |
+| **Production** | base gérée | `database` | active | `DB_SSL=true` obligatoire |
+
+> ⚠️ Sans `DATABASE_URL` propre dans `apps/backend/.env.test`, les tests héritent de la base de
+> développement **et la remettent à zéro**. À configurer avant d'écrire le premier test.
+
+### Secrets
+
+- `.env`, `.env.test` et toute variante sont exclus par `.gitignore` ; seuls les `.env.example` sont
+  versionnés, et ils ne contiennent que des valeurs factices.
+- Le dépôt est public et **l'historique Git est permanent** : un secret publié une fois est compromis
+  pour toujours, même supprimé au commit suivant. Il doit être **révoqué**, pas effacé.
+- L'intégration continue analyse chaque poussée à la recherche de secrets, sur l'historique complet.
+- Générez une `APP_KEY` distincte par environnement avec `node ace generate:key`.
+
 ## État d'avancement
 
 Le projet est en développement actif. La feuille de route est suivie publiquement.
