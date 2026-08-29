@@ -2,7 +2,7 @@
  * Statuts des convertis. Les libellés sont statiques ; les couleurs sont
  * dérivées du thème actif via `statusStyle`.
  */
-import type { AppColors } from './theme';
+import type { AppColors } from './theme.js';
 
 export type StatusKey = 'baptise' | 'sauve' | 'reflexion' | 'sceptique' | 'nonsauve';
 

@@ -13,6 +13,7 @@
       "version": "1.0.0",
       "dependencies": {
         "@adonisjs/auth": "^10.1.0",
+        "@adonisjs/bouncer": "^4.0.1",
         "@adonisjs/core": "^7.4.0",
         "@adonisjs/cors": "^3.0.0",
         "@adonisjs/limiter": "^3.0.1",
@@ -161,6 +162,8 @@
     "@adonisjs/auth": ["@adonisjs/auth@10.1.0", "", { "dependencies": { "@adonisjs/presets": "^3.0.0", "basic-auth": "^2.0.1" }, "peerDependencies": { "@adonisjs/assembler": "^8.0.0-next.26 || ^8.0.0", "@adonisjs/core": "^7.0.0-next.16 || ^7.0.0", "@adonisjs/i18n": "^3.0.0-next.2 || ^3.0.0", "@adonisjs/lucid": "^22.0.0-next.1 || ^22.0.0", "@adonisjs/session": "^8.0.0-next.1 || ^8.0.0", "@japa/api-client": "^3.1.1", "@japa/browser-client": "^2.2.0", "@japa/plugin-adonisjs": "^5.1.0-next.0 || ^5.1.0" }, "optionalPeers": ["@adonisjs/assembler", "@adonisjs/i18n", "@adonisjs/lucid", "@adonisjs/session", "@japa/api-client", "@japa/browser-client", "@japa/plugin-adonisjs"] }, "sha512-H92C4HLWBpvxtQrgnsdWdWfoGu2bM/j+nyk/tHmpxH9ETkNOH0z3dRfEebLJI63vtTDpRp5cwiI0bzn32gUQiA=="],
 
     "@adonisjs/bodyparser": ["@adonisjs/bodyparser@11.0.4", "", { "dependencies": { "@poppinss/macroable": "^1.1.2", "@poppinss/middleware": "^3.2.7", "@poppinss/multiparty": "^3.0.0", "@poppinss/qs": "^6.15.0", "@poppinss/utils": "^7.0.1", "file-type": "^22.0.1", "inflation": "^2.1.0", "media-typer": "^1.1.0", "raw-body": "^3.0.2" }, "peerDependencies": { "@adonisjs/http-server": "^8.0.0-next.17 || ^8.0.0 || ^9.0.0" } }, "sha512-amqMPVFbzxkOoCMbkFs5sC+rTu7cER2rSv+1v8dsGKszolk5lnGuyNjkha1Lqksvw1qykIIbC1fXr37B9WJTdg=="],
+
+    "@adonisjs/bouncer": ["@adonisjs/bouncer@4.0.1", "", { "dependencies": { "@poppinss/utils": "^7.0.1" }, "peerDependencies": { "@adonisjs/assembler": "^8.0.0-next.26 || ^8.0.0", "@adonisjs/core": "^7.0.0-next.16 || ^7.0.0", "@adonisjs/i18n": "^3.0.0-next.2 || ^3.0.0", "edge.js": "^6.4.0" }, "optionalPeers": ["@adonisjs/assembler", "@adonisjs/i18n", "edge.js"] }, "sha512-YTVlr2apjEHZIDgs09zl2dAMse5xBOCWQ+iY5qYxsZwMRAZcNHaOMjhD6LGjxXKyyM0tFbypgshAWiKuFbI1MA=="],
 
     "@adonisjs/config": ["@adonisjs/config@6.1.0", "", { "dependencies": { "@poppinss/utils": "^7.0.0" } }, "sha512-YVDRL8xHCtM6iMnAefOBaz6iXVpojwBPDQWPKxnVSucycYeNGrGitJiLy+cGaeAU7Gjm8al9SJRJt3rRPr5PKg=="],
 

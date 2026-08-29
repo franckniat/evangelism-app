@@ -1,4 +1,4 @@
-import type { StatusKey } from './status';
+import type { StatusKey } from './status.js';
 
 export type Sexe = 'H' | 'F';
 

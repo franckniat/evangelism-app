@@ -43,6 +43,73 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class ConvertEventSchema extends BaseModel {
+  static $columns = ['convertId', 'createdAt', 'id', 'text', 'type', 'updatedAt', 'userId'] as const
+  $columns = ConvertEventSchema.$columns
+  @column()
+  declare convertId: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare text: string | null
+  @column()
+  declare type: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
+export class ConvertSchema extends BaseModel {
+  static $columns = [
+    'consentedAt',
+    'createdAt',
+    'email',
+    'firstName',
+    'id',
+    'lastName',
+    'metAt',
+    'notes',
+    'phone',
+    'sectorId',
+    'sex',
+    'status',
+    'updatedAt',
+    'userId',
+  ] as const
+  $columns = ConvertSchema.$columns
+  @column.dateTime()
+  declare consentedAt: DateTime | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare email: string | null
+  @column()
+  declare firstName: string
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare lastName: string | null
+  @column.dateTime()
+  declare metAt: DateTime | null
+  @column()
+  declare notes: string | null
+  @column()
+  declare phone: string | null
+  @column()
+  declare sectorId: string | null
+  @column()
+  declare sex: string | null
+  @column()
+  declare status: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
 export class RateLimitSchema extends BaseModel {
   static $columns = ['expire', 'key', 'points'] as const
   $columns = RateLimitSchema.$columns
@@ -96,6 +163,25 @@ export class RefreshTokenSchema extends BaseModel {
   declare userId: number
 }
 
+export class SectorSchema extends BaseModel {
+  static $columns = ['city', 'country', 'createdAt', 'id', 'name', 'updatedAt', 'userId'] as const
+  $columns = SectorSchema.$columns
+  @column()
+  declare city: string | null
+  @column()
+  declare country: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare name: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
 export class UserSchema extends BaseModel {
   static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
   $columns = UserSchema.$columns
@@ -111,4 +197,37 @@ export class UserSchema extends BaseModel {
   declare password: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+}
+
+export class VisitSchema extends BaseModel {
+  static $columns = [
+    'completedAt',
+    'convertId',
+    'createdAt',
+    'id',
+    'report',
+    'scheduledAt',
+    'status',
+    'updatedAt',
+    'userId',
+  ] as const
+  $columns = VisitSchema.$columns
+  @column.dateTime()
+  declare completedAt: DateTime | null
+  @column()
+  declare convertId: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare report: string | null
+  @column.dateTime()
+  declare scheduledAt: DateTime
+  @column()
+  declare status: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
 }

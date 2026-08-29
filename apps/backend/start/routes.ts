@@ -49,5 +49,37 @@ router
       .prefix('account')
       .as('profile')
       .use([middleware.auth(), throttleSessions])
+
+    /**
+     * Le métier : dossiers de suivi, secteurs et visites.
+     *
+     * Aucune de ces routes ne teste la propriété elle-même — elle est décidée
+     * par les politiques. Une ressource qui n'appartient pas à l'appelant
+     * répond 404 : un 403 confirmerait son existence.
+     */
+    router
+      .group(() => {
+        router.get('converts', [controllers.Converts, 'index'])
+        router.post('converts', [controllers.Converts, 'store'])
+        router.get('converts/:id', [controllers.Converts, 'show'])
+        router.patch('converts/:id', [controllers.Converts, 'update'])
+        router.delete('converts/:id', [controllers.Converts, 'destroy'])
+        // Deux chemins, un seul gestionnaire : il faut donc nommer
+        // explicitement, sinon les noms générés entrent en collision.
+        router.post('converts/:id/notes', [controllers.Converts, 'addEvent']).as('add_note')
+        router.post('converts/:id/calls', [controllers.Converts, 'addEvent']).as('log_call')
+
+        router.get('sectors', [controllers.Sectors, 'index'])
+        router.post('sectors', [controllers.Sectors, 'store'])
+        router.patch('sectors/:id', [controllers.Sectors, 'update'])
+        router.delete('sectors/:id', [controllers.Sectors, 'destroy'])
+
+        router.get('visits', [controllers.Visits, 'index'])
+        router.post('visits', [controllers.Visits, 'store'])
+        router.patch('visits/:id', [controllers.Visits, 'update'])
+        router.delete('visits/:id', [controllers.Visits, 'destroy'])
+      })
+      .as('data')
+      .use([middleware.auth(), throttleSessions])
   })
   .prefix('/api/v1')
