@@ -103,17 +103,12 @@ jobs:
         working-directory: apps/backend
         run: node ace migration:run --force
 
+      # Sans condition, volontairement : une garde qui saute les tests en
+      # silence rend la CI verte sans rien vérifier — ce qui est pire que
+      # pas de CI, puisque le vert est cru.
       - name: Lancer les tests
         working-directory: apps/backend
-        run: |
-          if compgen -G "tests/**/*.spec.ts" > /dev/null; then
-            node ace test
-          else
-            echo "Aucun test pour l'instant."
-            echo "La base PostgreSQL ci-dessus attend les suites des jetons,"
-            echo "sessions, limites et file de travaux, qui ne sont pour"
-            echo "l'heure vérifiés que par des scripts jetables."
-          fi
+        run: node ace test
 
   secrets:
     name: Analyse anti-secret
