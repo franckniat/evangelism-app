@@ -32,6 +32,7 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   // Limitation de débit
   LIMITER_STORE: Env.schema.enum(['database', 'memory'] as const),
+  RATE_LIMIT_ENABLED: Env.schema.boolean.optional(),
 
   // File de travaux
   QUEUE_ENABLED: Env.schema.boolean.optional(),
