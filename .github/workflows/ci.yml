@@ -48,6 +48,9 @@ jobs:
       DB_SSL: false
       # En mémoire : les compteurs ne doivent pas fuir d'un test à l'autre.
       LIMITER_STORE: memory
+      # Limites par adresse IP désactivées : tous les tests sortent de la
+      # même adresse. Le verrouillage par compte, lui, reste actif et testé.
+      RATE_LIMIT_ENABLED: false
       # Aucun worker : les travaux de fond ne doivent pas s'exécuter derrière
       # les assertions, ni pendant la génération du registre ci-dessous.
       QUEUE_ENABLED: false
