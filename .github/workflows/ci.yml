@@ -162,7 +162,21 @@ jobs:
       # que le serveur écoute.
       - name: Démarrer l'image
         run: |
-          docker run -d --name moisson-api -p 3333:3333             -e APP_KEY="$(openssl rand -base64 32)"             -e DATABASE_URL="postgresql://inutilise:inutilise@127.0.0.1:5432/inutilise"             -e DB_SSL=false             -e QUEUE_ENABLED=false             -e SESSION_DRIVER=memory             moisson-api:ci
+          cat > /tmp/moisson.env <<'FIN'
+          NODE_ENV=production
+          HOST=0.0.0.0
+          PORT=3333
+          LOG_LEVEL=warn
+          APP_URL=http://localhost:3333
+          SESSION_DRIVER=memory
+          DATABASE_URL=postgresql://inutilise:inutilise@127.0.0.1:5432/inutilise
+          DB_SSL=false
+          LIMITER_STORE=database
+          QUEUE_ENABLED=false
+          FIN
+          echo "APP_KEY=$(openssl rand -base64 32)" >> /tmp/moisson.env
+
+          docker run -d --name moisson-api -p 3333:3333 --env-file /tmp/moisson.env moisson-api:ci
 
           for _ in $(seq 1 30); do
             if curl -fsS http://localhost:3333/ > /dev/null; then
