@@ -1,0 +1,32 @@
+{
+  "cli": {
+    "version": ">= 12.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "pilote": {
+      "//": "Le profil du pilote : un APK installable directement, sans passer par un magasin. Un AAB serait plus petit mais ne s'installe pas à la main.",
+      "android": {
+        "buildType": "apk"
+      },
+      "distribution": "internal",
+      "channel": "pilote",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.example.invalid/api/v1"
+      }
+    },
+    "production": {
+      "//": "Pour le magasin, le jour venu : un AAB signé.",
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.example.invalid/api/v1"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

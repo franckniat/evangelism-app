@@ -1,0 +1,22 @@
+# Tout ce qui n'a rien à faire dans le contexte de construction : soit
+# reconstruit dans l'image, soit sans rapport, soit dangereux.
+node_modules
+**/node_modules
+**/dist
+**/build
+**/.next
+**/.expo
+**/.turbo
+**/.adonisjs
+
+.git
+.github
+docs
+scripts
+
+# ⚠️ Les fichiers d'environnement contiennent des mots de passe. Les laisser
+# entrer dans le contexte les ferait figurer dans une couche de l'image,
+# récupérable par quiconque tire cette image.
+**/.env
+**/.env.*
+!**/.env.example
