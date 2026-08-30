@@ -35,6 +35,7 @@ import { DICT, type Dict, type Lang } from '@/constants/i18n';
 import type { StatusKey } from '@/constants/status';
 import { ApiError, OfflineError, api, hasSession, restoreSession } from '@/lib/api';
 import { isoFromOffset } from '@/lib/dates';
+import { aDesDonneesLocales, reprendreDonneesLocales } from '@/lib/migration';
 import { cancelReminder, scheduleVisitReminder } from '@/lib/notifications';
 import {
   clearOutbox,
@@ -407,6 +408,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const syncNow = useCallback(async () => {
     if (!hasSession()) return;
+
+    /**
+     * Reprise des saisies antérieures au serveur, une fois pour toutes.
+     *
+     * Elle doit passer avant tout rafraîchissement : sans elle, le premier
+     * `pull` remplacerait le contenu de l'appareil par celui du compte —
+     * vide — et effacerait sans un mot le travail déjà fait. Le test se
+     * fonde sur la forme des identifiants, donc il devient faux de lui-même
+     * dès que la reprise a eu lieu.
+     */
+    const { converts, sectors, plannedVisits } = latest.current;
+    if (aDesDonneesLocales(converts, sectors)) {
+      const reprise = await reprendreDonneesLocales(converts, sectors, plannedVisits);
+      dispatch({
+        type: 'REPLACE_DATA',
+        converts: reprise.converts,
+        sectors: reprise.sectors,
+        plannedVisits: reprise.plannedVisits,
+      });
+      latest.current = {
+        ...latest.current,
+        converts: reprise.converts,
+        sectors: reprise.sectors,
+        plannedVisits: reprise.plannedVisits,
+      };
+    }
 
     const result = await drain();
 
