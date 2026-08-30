@@ -152,8 +152,30 @@ jobs:
           context: .
           file: apps/backend/Dockerfile
           push: false
+          load: true
+          tags: moisson-api:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # Construire ne prouve pas que ça démarre. La route racine ne touche
+      # pas la base : elle suffit à établir que les modules se résolvent et
+      # que le serveur écoute.
+      - name: Démarrer l'image
+        run: |
+          docker run -d --name moisson-api -p 3333:3333             -e APP_KEY="$(openssl rand -base64 32)"             -e DATABASE_URL="postgresql://inutilise:inutilise@127.0.0.1:5432/inutilise"             -e DB_SSL=false             -e QUEUE_ENABLED=false             -e SESSION_DRIVER=memory             moisson-api:ci
+
+          for _ in $(seq 1 30); do
+            if curl -fsS http://localhost:3333/ > /dev/null; then
+              echo "L'API répond."
+              docker rm -f moisson-api > /dev/null
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "L'API n'a pas répondu. Journal du conteneur :"
+          docker logs moisson-api
+          exit 1
 
   secrets:
     name: Analyse anti-secret

@@ -53,11 +53,14 @@ WORKDIR /app
 # Les modules sont copiés depuis le constructeur plutôt que réinstallés : la
 # sortie de `ace build` référence `@moisson/core` en dépendance d'espace de
 # travail, qu'aucun `install` ne saurait résoudre hors du dépôt.
+#
+# Un seul `node_modules`, celui de la racine : Bun hisse tout, et rien ne
+# subsiste sous `apps/backend`. Le lien `@moisson/core` qu'il contient pointe
+# vers `packages/core`, copié juste au-dessus.
 COPY --from=constructeur /app/node_modules ./node_modules
 COPY --from=constructeur /app/packages/core/package.json ./packages/core/package.json
 COPY --from=constructeur /app/packages/core/dist ./packages/core/dist
 COPY --from=constructeur /app/apps/backend/build ./apps/backend
-COPY --from=constructeur /app/apps/backend/node_modules ./apps/backend/node_modules
 
 WORKDIR /app/apps/backend
 
