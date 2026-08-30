@@ -60,6 +60,17 @@ export default async function LayoutApplication({
       </header>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>
+
+      <footer className="mx-auto w-full max-w-6xl px-4 py-6">
+        <nav className="text-muted-foreground flex flex-wrap gap-4 text-xs">
+          <Link href="/conditions" className="hover:underline">
+            Conditions d&apos;utilisation
+          </Link>
+          <Link href="/confidentialite" className="hover:underline">
+            Politique de confidentialité
+          </Link>
+        </nav>
+      </footer>
     </div>
   );
 }

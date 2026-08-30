@@ -94,7 +94,15 @@ export default function PagePublique() {
         </section>
       </main>
 
-      <footer className="mx-auto w-full max-w-5xl px-6 py-8">
+      <footer className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-6 py-8">
+        <nav className="flex flex-wrap gap-4 text-sm">
+          <Link href="/conditions" className="hover:underline">
+            Conditions d&apos;utilisation
+          </Link>
+          <Link href="/confidentialite" className="hover:underline">
+            Politique de confidentialité
+          </Link>
+        </nav>
         <p className="text-muted-foreground text-sm">
           Moisson est un logiciel libre, publié sous licence AGPL-3.0. Le code
           est consultable, modifiable et redistribuable par tous.
