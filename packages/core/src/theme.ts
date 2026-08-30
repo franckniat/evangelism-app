@@ -1,6 +1,7 @@
 /**
  * Moisson — système de design (style minimaliste type shadcn/ui).
- * Police Geist, bleu comme couleur principale, jetons sémantiques déclinés
+ * Police Bricolage Grotesque, bleu comme couleur principale, jetons
+ * sémantiques déclinés
  * en thème clair et sombre.
  */
 
@@ -154,9 +155,14 @@ export const shadow = {
   },
 } as const;
 
-/** Familles de police Geist (@expo-google-fonts/geist). */
+/**
+ * Familles de police Bricolage Grotesque
+ * (`@expo-google-fonts/bricolage-grotesque` sur mobile, `next/font` sur le
+ * web). Les noms sont ceux des graisses chargées : sur React Native une
+ * police se désigne par sa fonte, pas par une famille plus un poids.
+ */
 export const fonts = {
-  regular: 'Geist_400Regular',
-  semibold: 'Geist_600SemiBold',
-  heading: 'Geist_700Bold',
+  regular: 'BricolageGrotesque_400Regular',
+  semibold: 'BricolageGrotesque_600SemiBold',
+  heading: 'BricolageGrotesque_700Bold',
 } as const;

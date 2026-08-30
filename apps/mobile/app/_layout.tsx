@@ -1,9 +1,9 @@
 import {
-  Geist_400Regular,
-  Geist_600SemiBold,
-  Geist_700Bold,
+  BricolageGrotesque_400Regular,
+  BricolageGrotesque_600SemiBold,
+  BricolageGrotesque_700Bold,
   useFonts,
-} from '@expo-google-fonts/geist';
+} from '@expo-google-fonts/bricolage-grotesque';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
@@ -91,9 +91,9 @@ function ThemedShell() {
 
 export default function RootLayout() {
   const [loaded] = useFonts({
-    Geist_400Regular,
-    Geist_600SemiBold,
-    Geist_700Bold,
+    BricolageGrotesque_400Regular,
+    BricolageGrotesque_600SemiBold,
+    BricolageGrotesque_700Bold,
   });
 
   useEffect(() => {

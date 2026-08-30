@@ -14,8 +14,7 @@
     "bundle": "node ../../node_modules/expo/bin/cli export --platform android --output-dir dist"
   },
   "dependencies": {
-    "@expo-google-fonts/archivo": "^0.4.2",
-    "@expo-google-fonts/geist": "^0.4.2",
+    "@expo-google-fonts/bricolage-grotesque": "^0.4.1",
     "@expo/vector-icons": "^15.0.3",
     "@moisson/core": "workspace:*",
     "@react-native-async-storage/async-storage": "2.2.0",

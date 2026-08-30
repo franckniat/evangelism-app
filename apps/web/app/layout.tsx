@@ -1,13 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+/**
+ * La variable exposée ici doit rester distincte du jeton Tailwind : dans
+ * `globals.css`, `--font-sans` vaut `var(--font-bricolage)`. L'ancienne
+ * déclaration écrivait `--font-sans: var(--font-sans)`, qui se référence
+ * lui-même — la police était chargée puis ignorée, et le site s'affichait
+ * dans la police par défaut du système.
+ */
+const police = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
+const policeMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
@@ -25,7 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="fr"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${police.variable} ${policeMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
