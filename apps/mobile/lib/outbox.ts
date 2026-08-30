@@ -74,6 +74,26 @@ export function pendingCount(): number {
   return queue.length;
 }
 
+/**
+ * Les enregistrements que le serveur ne connaît pas encore.
+ *
+ * Un rafraîchissement remplace l'état local par celui du serveur. Sans cette
+ * liste, une saisie faite pendant qu'une lecture était en vol disparaîtrait
+ * de l'écran — elle est bien dans la file, mais l'utilisateur, lui, voit son
+ * travail s'effacer et le refait.
+ */
+export function idsEnAttente(): { convertis: Set<string>; secteurs: Set<string> } {
+  const convertis = new Set<string>();
+  const secteurs = new Set<string>();
+
+  for (const m of queue) {
+    if ('convertId' in m) convertis.add(m.convertId);
+    if ('sectorId' in m) secteurs.add(m.sectorId);
+  }
+
+  return { convertis, secteurs };
+}
+
 export async function clearOutbox(): Promise<void> {
   queue = [];
   loaded = true;

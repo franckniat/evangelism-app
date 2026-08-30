@@ -43,6 +43,7 @@ import {
   enqueue,
   forgetLocalConvert,
   forgetLocalSector,
+  idsEnAttente,
   loadOutbox,
   pendingCount,
 } from '@/lib/outbox';
@@ -283,7 +284,7 @@ function statusOf(error: unknown): number | null {
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, appliquer] = useReducer(reducer, initialState);
 
   /**
    * L'état vu par les fonctions asynchrones.
@@ -291,11 +292,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
    * Un `useCallback` capture l'état de son rendu ; entre le moment où
    * l'utilisateur appuie et celui où la requête part, l'état a pu changer.
    * Cette référence donne toujours la version courante.
+   *
+   * Elle est mise à jour **dans le même geste** que l'envoi au réducteur, et
+   * non dans un effet : un effet ne s'exécute qu'après le rendu, si bien
+   * qu'une fonction lancée juste après un `dispatch` lirait l'état
+   * d'avant. Le réducteur étant pur, l'appliquer ici et là ne coûte rien
+   * et supprime toute une famille de bogues d'état périmé.
    */
   const latest = useRef(state);
-  useEffect(() => {
-    latest.current = state;
-  });
+
+  const dispatch = useCallback((action: Action) => {
+    latest.current = reducer(latest.current, action);
+    appliquer(action);
+  }, []);
 
   /* ---------------------------------------------------------------- *
    * Chargement initial et persistance du cache
@@ -330,7 +339,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [dispatch]);
 
   const { hydrated } = state;
   useEffect(() => {
@@ -381,13 +390,41 @@ export function AppProvider({ children }: { children: ReactNode }) {
       api.listVisits('upcoming'),
     ]);
 
-    const sectors = sectorDtos.map(sectorFromDto);
+    /**
+     * Ce que le serveur ignore encore reste à l'écran.
+     *
+     * Un rafraîchissement remplace l'état local par celui du serveur. Une
+     * saisie faite pendant qu'une lecture était en vol n'y figure pas encore :
+     * la remplacer purement et simplement la ferait disparaître sous les yeux
+     * de l'utilisateur, alors qu'elle est bien dans la file d'envoi. Il la
+     * ressaisirait — et se retrouverait avec un doublon à la reconnexion.
+     */
+    const enAttente = idsEnAttente();
+    const recuSecteurs = new Set(sectorDtos.map((s) => s.id));
+    const recuConvertis = new Set(convertDtos.map((c) => c.id));
+
     const noms = new Map(sectorDtos.map((s) => [s.id, s.name]));
     const connus = new Map(latest.current.converts.map((c) => [c.id, c]));
 
-    const converts = convertDtos.map((dto) =>
-      convertFromDto(dto, noms, latest.current.lang, connus.get(dto.id))
+    const secteursLocaux = latest.current.sectors.filter(
+      (s) => enAttente.secteurs.has(s.id) && !recuSecteurs.has(s.id)
     );
+    const dossiersLocaux = latest.current.converts.filter(
+      (c) => enAttente.convertis.has(c.id) && !recuConvertis.has(c.id)
+    );
+
+    for (const s of secteursLocaux) noms.set(s.id, s.name);
+
+    const sectors = [...sectorDtos.map(sectorFromDto), ...secteursLocaux].sort((a, b) =>
+      a.name.localeCompare(b.name, 'fr')
+    );
+
+    const converts = [
+      ...dossiersLocaux,
+      ...convertDtos.map((dto) =>
+        convertFromDto(dto, noms, latest.current.lang, connus.get(dto.id))
+      ),
+    ];
 
     /**
      * L'interface ne montre qu'une échéance par converti ; le serveur, lui,
@@ -404,9 +441,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
 
     dispatch({ type: 'REPLACE_DATA', converts, sectors, plannedVisits });
-  }, []);
+  }, [dispatch]);
 
-  const syncNow = useCallback(async () => {
+  const executerSync = useCallback(async () => {
     if (!hasSession()) return;
 
     /**
@@ -427,12 +464,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         sectors: reprise.sectors,
         plannedVisits: reprise.plannedVisits,
       });
-      latest.current = {
-        ...latest.current,
-        converts: reprise.converts,
-        sectors: reprise.sectors,
-        plannedVisits: reprise.plannedVisits,
-      };
     }
 
     const result = await drain();
@@ -458,7 +489,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
         rejected: result.rejected.length > 0,
       });
     }
-  }, [pull]);
+  }, [dispatch, pull]);
+
+  /**
+   * Les synchronisations s'enchaînent, elles ne se chevauchent jamais.
+   *
+   * Sans cela, deux lectures partent en parallèle et c'est la dernière
+   * *arrivée* qui gagne — pas la dernière partie. Une lecture lancée avant
+   * une saisie peut donc revenir après elle et écraser l'écran avec un
+   * état antérieur. C'est exactement le bogue du secteur qu'il fallait
+   * recharger pour voir.
+   */
+  const fileDeSync = useRef<Promise<void>>(Promise.resolve());
+
+  const syncNow = useCallback(() => {
+    const suivante = fileDeSync.current.then(executerSync, executerSync);
+    fileDeSync.current = suivante.catch(() => undefined);
+    return suivante;
+  }, [executerSync]);
 
   /** Une synchronisation à l'ouverture, puis à chaque reconnexion réussie. */
   useEffect(() => {
@@ -477,14 +525,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await syncNow();
       })();
     },
-    [syncNow]
+    [dispatch, syncNow]
   );
 
   /* ---------------------------------------------------------------- *
    * Authentification
    * ---------------------------------------------------------------- */
 
-  const markIntroSeen = useCallback(() => dispatch({ type: 'SET_INTRO_SEEN' }), []);
+  const markIntroSeen = useCallback(() => dispatch({ type: 'SET_INTRO_SEEN' }), [dispatch]);
 
   const login = useCallback(
     async (email: string, password: string): Promise<AuthResult> => {
@@ -499,7 +547,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { ok: false, error: 'credentials' };
       }
     },
-    []
+    [dispatch]
   );
 
   const register = useCallback(async (input: RegisterInput): Promise<AuthResult> => {
@@ -532,7 +580,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       return { ok: false, error: 'invalid' };
     }
-  }, []);
+  }, [dispatch]);
 
   const logout = useCallback(() => {
     void (async () => {
@@ -542,7 +590,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await clearAccountCache();
       dispatch({ type: 'SIGNED_OUT' });
     })();
-  }, []);
+  }, [dispatch]);
 
   const updateProfile = useCallback(
     (patch: ProfilePatch) => {
@@ -570,25 +618,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       push({ id: uuid(), kind: 'profile.update', body });
     },
-    [push]
+    [dispatch, push]
   );
 
   /* ---------------------------------------------------------------- *
    * Préférences — locales à l'appareil, jamais envoyées
    * ---------------------------------------------------------------- */
 
-  const setLang = useCallback((lang: Lang) => dispatch({ type: 'SET_LANG', lang }), []);
+  const setLang = useCallback((lang: Lang) => dispatch({ type: 'SET_LANG', lang }), [dispatch]);
   const toggleNotif = useCallback(
     () => dispatch({ type: 'SET_SETTINGS', patch: { notifOn: !latest.current.settings.notifOn } }),
-    []
+    [dispatch]
   );
   const setAppLock = useCallback(
     (value: boolean) => dispatch({ type: 'SET_SETTINGS', patch: { appLock: value } }),
-    []
+    [dispatch]
   );
   const setThemePref = useCallback(
     (pref: ThemePref) => dispatch({ type: 'SET_SETTINGS', patch: { themePref: pref } }),
-    []
+    [dispatch]
   );
 
   /* ---------------------------------------------------------------- *
@@ -642,7 +690,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       return id;
     },
-    [push, sectorIds, t]
+    [dispatch, push, sectorIds, t]
   );
 
   const updateConvert = useCallback(
@@ -665,7 +713,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         body: payloadFromConvert(patch, sectorIds()),
       });
     },
-    [push, sectorIds]
+    [dispatch, push, sectorIds]
   );
 
   const deleteConvert = useCallback(
@@ -689,7 +737,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         push({ id: uuid(), kind: 'convert.delete', convertId: id });
       })();
     },
-    [push]
+    [dispatch, push]
   );
 
   const setStatus = useCallback(
@@ -697,7 +745,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'UPDATE_CONVERT', id, patch: { statut } });
       push({ id: uuid(), kind: 'convert.update', convertId: id, body: { status: statut } });
     },
-    [push]
+    [dispatch, push]
   );
 
   const planVisit = useCallback(
@@ -729,7 +777,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       push({ id: uuid(), kind: 'visit.create', visitId, convertId: id, scheduledAt });
     },
-    [push, t]
+    [dispatch, push, t]
   );
 
   /**
@@ -764,7 +812,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       if (encours) push({ id: uuid(), kind: 'visit.complete', visitId: encours.visitId });
     },
-    [planVisit, push, t]
+    [dispatch, planVisit, push, t]
   );
 
   /**
@@ -785,7 +833,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         // Hors ligne : on garde le fil déjà en cache.
       }
     },
-    [t]
+    [dispatch, t]
   );
 
   /* ---------------------------------------------------------------- *
@@ -810,7 +858,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         body: { name: sector.name, city: ville.trim() || null, country: pays.trim() || null },
       });
     },
-    [push]
+    [dispatch, push]
   );
 
   const updateSector = useCallback(
@@ -840,7 +888,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         body: { name: patch.name, city: ville.trim() || null, country: pays.trim() || null },
       });
     },
-    [push]
+    [dispatch, push]
   );
 
   const deleteSector = useCallback(
@@ -856,7 +904,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         push({ id: uuid(), kind: 'sector.delete', sectorId: id });
       })();
     },
-    [push]
+    [dispatch, push]
   );
 
   /* ---------------------------------------------------------------- *
@@ -871,7 +919,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           n.id === id ? { ...n, unread: false } : n
         ),
       }),
-    []
+    [dispatch]
   );
 
   const markAllRead = useCallback(
@@ -880,12 +928,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         type: 'SET_NOTIFICATIONS',
         notifications: latest.current.notifications.map((n) => ({ ...n, unread: false })),
       }),
-    []
+    [dispatch]
   );
 
   const clearNotifications = useCallback(
     () => dispatch({ type: 'SET_NOTIFICATIONS', notifications: [] }),
-    []
+    [dispatch]
   );
 
   const unreadCount = useMemo(
