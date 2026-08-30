@@ -14,3 +14,4 @@ export * from './i18n.js';
 export * from './theme.js';
 export * from './dates.js';
 export * from './view.js';
+export * from './api.js';

@@ -57,7 +57,8 @@
           "faceIDPermission": "Moisson utilise Face ID pour déverrouiller l'application."
         }
       ],
-      "expo-notifications"
+      "expo-notifications",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -1,7 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useMemo } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useMemo, useState } from 'react';
+import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/ui/Avatar';
@@ -9,6 +9,7 @@ import { NotifBell } from '@/components/ui/NotifBell';
 import { ProgressRow } from '@/components/ui/ProgressRow';
 import { StatBox } from '@/components/ui/StatBox';
 import { StatusBadge } from '@/components/ui/StatusBadge';
+import { SyncBanner } from '@/components/ui/SyncBanner';
 import { statusStyle, STATUS_LABEL, STATUS_ORDER } from '@/constants/status';
 import { fonts, radius, type AppColors } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
@@ -16,10 +17,17 @@ import { useColors } from '@/context/ThemeContext';
 import { decorateConvert } from '@/lib/view';
 
 export default function HomeScreen() {
-  const { t, lang, converts, sectors, currentUser, unreadCount, toggleTask } = useApp();
+  const { t, lang, converts, sectors, currentUser, unreadCount, toggleTask, syncNow } = useApp();
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
   const router = useRouter();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await syncNow();
+    setRefreshing(false);
+  }, [syncNow]);
 
   const views = useMemo(
     () => converts.map((x) => decorateConvert(x, lang, t, c)),
@@ -79,7 +87,14 @@ export default function HomeScreen() {
         <NotifBell count={unreadCount} onPress={() => router.push('/notifications')} />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scroll}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={c.accent} />
+        }>
+        <SyncBanner />
+
         <View style={styles.statsGrid}>
           <View style={styles.statsRow}>
             <StatBox {...stats[0]} />

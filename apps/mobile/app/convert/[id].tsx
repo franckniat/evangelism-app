@@ -1,6 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -19,11 +19,21 @@ import { decorateConvert } from '@/lib/view';
 
 export default function ConvertDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { t, lang, converts, setStatus, planVisit, deleteConvert } = useApp();
+  const { t, lang, converts, setStatus, planVisit, deleteConvert, loadConvertHistory } = useApp();
   const cols = useColors();
   const styles = useMemo(() => makeStyles(cols), [cols]);
   const { showToast } = useToast();
   const router = useRouter();
+
+  /**
+   * Le fil d'activité n'accompagne pas la liste — cinquante entrées par
+   * dossier, pour un écran qui n'en montre qu'un. Il est donc chargé ici,
+   * à l'ouverture de la fiche. Avant ce hook, aucun retour anticipé : les
+   * hooks doivent s'exécuter dans le même ordre à chaque rendu.
+   */
+  useEffect(() => {
+    if (id) void loadConvertHistory(id);
+  }, [id, loadConvertHistory]);
 
   const convert = converts.find((x) => x.id === id);
 

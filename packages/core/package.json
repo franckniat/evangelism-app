@@ -2,6 +2,7 @@
   "name": "@moisson/core",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Logique métier et types partagés de Moisson (mobile, web, desktop)",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

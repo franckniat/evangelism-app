@@ -197,6 +197,20 @@ const fr = {
   toast_lock_on: 'Verrouillage activé',
   toast_lock_off: 'Verrouillage désactivé',
   toast_lock_unavailable: 'Aucune biométrie/code configuré sur cet appareil',
+  // Fil d'activité (côté serveur)
+  hist_note: 'Note',
+  hist_call: 'Appel',
+  hist_visit_done: 'Visite effectuée',
+  hist_status: 'Statut',
+
+  // Synchronisation
+  sync_offline: 'Hors ligne — vos modifications partiront à la reconnexion',
+  sync_pending: "en attente d'envoi",
+  sync_rejected: 'Une modification a été refusée par le serveur',
+  sync_retry: 'Réessayer',
+  login_offline: 'Serveur injoignable — vérifiez votre connexion',
+  register_email_needed: 'Une adresse e-mail est nécessaire pour créer un compte',
+  register_weak_password: 'Le mot de passe doit faire au moins 8 caractères',
 };
 
 export type Dict = typeof fr;
@@ -375,6 +389,20 @@ const en: Dict = {
   toast_lock_on: 'App lock enabled',
   toast_lock_off: 'App lock disabled',
   toast_lock_unavailable: 'No biometrics/passcode set on this device',
+  // Activity feed (server side)
+  hist_note: 'Note',
+  hist_call: 'Call',
+  hist_visit_done: 'Visit completed',
+  hist_status: 'Status',
+
+  // Synchronisation
+  sync_offline: 'Offline — your changes will be sent once you reconnect',
+  sync_pending: 'waiting to be sent',
+  sync_rejected: 'The server refused one of your changes',
+  sync_retry: 'Retry',
+  login_offline: 'Server unreachable — check your connection',
+  register_email_needed: 'An e-mail address is required to create an account',
+  register_weak_password: 'The password must be at least 8 characters long',
 };
 
 export const DICT: Record<Lang, Dict> = { fr, en };

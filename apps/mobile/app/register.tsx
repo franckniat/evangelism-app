@@ -17,13 +17,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
 import { Input } from '@/components/ui/Input';
-import { Segmented } from '@/components/ui/Segmented';
 import { StackHeader } from '@/components/ui/StackHeader';
 import { fonts, radius, type AppColors } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/context/ThemeContext';
-
-type IdType = 'email' | 'phone';
 
 export default function RegisterScreen() {
   const { t, register } = useApp();
@@ -31,8 +28,7 @@ export default function RegisterScreen() {
   const styles = useMemo(() => makeStyles(c), [c]);
   const router = useRouter();
   const [name, setName] = useState('');
-  const [idType, setIdType] = useState<IdType>('email');
-  const [identifier, setIdentifier] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [church, setChurch] = useState('');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
@@ -53,23 +49,32 @@ export default function RegisterScreen() {
 
   const onSubmit = async () => {
     setError(null);
-    if (!name.trim() || !identifier.trim() || !password.trim() || !church.trim()) {
+    if (!name.trim() || !email.trim() || !password.trim() || !church.trim()) {
       setError(t.register_incomplete);
       return;
     }
-    setLoading(true);
-    const res = await register({
-      name,
-      church,
-      password,
-      photoUri,
-      email: idType === 'email' ? identifier : undefined,
-      phone: idType === 'phone' ? identifier : undefined,
-    });
-    setLoading(false);
-    if (!res.ok) {
-      setError(t.register_error);
+    if (password.length < 8) {
+      setError(t.register_weak_password);
       return;
+    }
+
+    setLoading(true);
+    const res = await register({ name, church, password, photoUri, email });
+    setLoading(false);
+
+    if (!res.ok) {
+      /**
+       * Dire lequel des trois échecs s'est produit : « une erreur est
+       * survenue » laisse l'utilisateur réessayer la même chose sans savoir
+       * quoi changer.
+       */
+      setError(
+        res.error === 'offline'
+          ? t.login_offline
+          : res.error === 'taken'
+            ? t.register_error
+            : t.register_incomplete
+      );
     }
   };
 
@@ -99,27 +104,13 @@ export default function RegisterScreen() {
             <Input value={name} onChangeText={setName} placeholder="Jean Kamga" />
           </Field>
 
-          <Field label={t.register_idtype} style={styles.field}>
-            <Segmented
-              value={idType}
-              onChange={(v) => {
-                setIdType(v);
-                setIdentifier('');
-              }}
-              options={[
-                { value: 'email', label: t.register_email },
-                { value: 'phone', label: t.register_phone },
-              ]}
-            />
-          </Field>
-
-          <Field label={idType === 'email' ? t.register_email : t.register_phone} style={styles.field}>
+          <Field label={t.register_email} style={styles.field}>
             <Input
-              value={identifier}
-              onChangeText={setIdentifier}
+              value={email}
+              onChangeText={setEmail}
               autoCapitalize="none"
-              keyboardType={idType === 'email' ? 'email-address' : 'phone-pad'}
-              placeholder={idType === 'email' ? 'jean@exemple.cm' : '+237 6 90 00 00 00'}
+              keyboardType="email-address"
+              placeholder="jean@exemple.cm"
             />
           </Field>
 

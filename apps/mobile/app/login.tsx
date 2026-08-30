@@ -24,17 +24,25 @@ export default function LoginScreen() {
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
   const router = useRouter();
-  const [identifier, setIdentifier] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const onSignIn = async () => {
-    setError(false);
+    setError(null);
     setLoading(true);
-    const ok = await login(identifier, password);
+    const res = await login(email, password);
     setLoading(false);
-    if (!ok) setError(true);
+
+    if (!res.ok) {
+      /**
+       * Un serveur injoignable et un mot de passe faux appellent des gestes
+       * différents. Les confondre sous « identifiants incorrects » enverrait
+       * quelqu'un retaper indéfiniment un mot de passe correct.
+       */
+      setError(res.error === 'offline' ? t.login_offline : t.login_error);
+    }
   };
 
   return (
@@ -51,13 +59,13 @@ export default function LoginScreen() {
 
           <Text style={styles.title}>{t.login_title}</Text>
 
-          <Field label={t.login_identifier} style={styles.field}>
+          <Field label={t.login_email} style={styles.field}>
             <Input
-              value={identifier}
-              onChangeText={setIdentifier}
+              value={email}
+              onChangeText={setEmail}
               autoCapitalize="none"
               keyboardType="email-address"
-              placeholder={t.login_identifier_ph}
+              placeholder="jean@exemple.cm"
             />
           </Field>
           <Field label={t.login_pass} style={styles.fieldTight}>
@@ -67,7 +75,7 @@ export default function LoginScreen() {
             <Text style={styles.forgot}>{t.login_forgot}</Text>
           </Pressable>
 
-          {error && <Text style={styles.error}>{t.login_error}</Text>}
+          {error && <Text style={styles.error}>{error}</Text>}
 
           <Button
             title={t.login_signin}

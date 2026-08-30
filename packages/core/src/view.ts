@@ -40,7 +40,7 @@ export function decorateConvert(c: Convert, lang: Lang, t: Dict, colors: AppColo
     statusTagBg: st.tagBg,
     statusTagFg: st.tagFg,
     statusTagBorder: st.tagBorder,
-    sexeLabel: c.sexe === 'H' ? t.sexe_h : t.sexe_f,
+    sexeLabel: c.sexe === 'H' ? t.sexe_h : c.sexe === 'F' ? t.sexe_f : '—',
     dueLabelText: dueLabel(c, t),
     dueColorVal: dueColor(c, colors),
     state: taskState(c),

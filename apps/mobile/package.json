@@ -13,10 +13,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@moisson/core": "workspace:*",
     "@expo-google-fonts/archivo": "^0.4.2",
     "@expo-google-fonts/geist": "^0.4.2",
     "@expo/vector-icons": "^15.0.3",
+    "@moisson/core": "workspace:*",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
@@ -34,6 +34,7 @@
     "expo-local-authentication": "~17.0.8",
     "expo-notifications": "~0.32.17",
     "expo-router": "~6.0.24",
+    "expo-secure-store": "~15.0.8",
     "expo-splash-screen": "~31.0.13",
     "expo-status-bar": "~3.0.9",
     "expo-symbols": "~1.0.8",
