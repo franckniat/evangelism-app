@@ -8,18 +8,7 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class AuthAccessTokenSchema extends BaseModel {
-  static $columns = [
-    'abilities',
-    'createdAt',
-    'expiresAt',
-    'hash',
-    'id',
-    'lastUsedAt',
-    'name',
-    'tokenableId',
-    'type',
-    'updatedAt',
-  ] as const
+  static $columns = ['abilities', 'createdAt', 'expiresAt', 'hash', 'id', 'lastUsedAt', 'name', 'tokenableId', 'type', 'updatedAt'] as const
   $columns = AuthAccessTokenSchema.$columns
   @column()
   declare abilities: string
@@ -63,22 +52,7 @@ export class ConvertEventSchema extends BaseModel {
 }
 
 export class ConvertSchema extends BaseModel {
-  static $columns = [
-    'consentedAt',
-    'createdAt',
-    'email',
-    'firstName',
-    'id',
-    'lastName',
-    'metAt',
-    'notes',
-    'phone',
-    'sectorId',
-    'sex',
-    'status',
-    'updatedAt',
-    'userId',
-  ] as const
+  static $columns = ['consentedAt', 'createdAt', 'email', 'firstName', 'id', 'lastName', 'metAt', 'notes', 'phone', 'sectorId', 'sex', 'status', 'updatedAt', 'userId'] as const
   $columns = ConvertSchema.$columns
   @column.dateTime()
   declare consentedAt: DateTime | null
@@ -122,20 +96,7 @@ export class RateLimitSchema extends BaseModel {
 }
 
 export class RefreshTokenSchema extends BaseModel {
-  static $columns = [
-    'createdAt',
-    'expiresAt',
-    'familyId',
-    'hash',
-    'id',
-    'ipAddress',
-    'revokedAt',
-    'revokedReason',
-    'updatedAt',
-    'usedAt',
-    'userAgent',
-    'userId',
-  ] as const
+  static $columns = ['createdAt', 'expiresAt', 'familyId', 'hash', 'id', 'ipAddress', 'revokedAt', 'revokedReason', 'updatedAt', 'usedAt', 'userAgent', 'userId'] as const
   $columns = RefreshTokenSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -183,8 +144,10 @@ export class SectorSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
+  static $columns = ['church', 'createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
   $columns = UserSchema.$columns
+  @column()
+  declare church: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()
@@ -200,17 +163,7 @@ export class UserSchema extends BaseModel {
 }
 
 export class VisitSchema extends BaseModel {
-  static $columns = [
-    'completedAt',
-    'convertId',
-    'createdAt',
-    'id',
-    'report',
-    'scheduledAt',
-    'status',
-    'updatedAt',
-    'userId',
-  ] as const
+  static $columns = ['completedAt', 'convertId', 'createdAt', 'id', 'report', 'scheduledAt', 'status', 'updatedAt', 'userId'] as const
   $columns = VisitSchema.$columns
   @column.dateTime()
   declare completedAt: DateTime | null

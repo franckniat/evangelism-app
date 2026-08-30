@@ -36,6 +36,7 @@ router
     router
       .group(() => {
         router.get('profile', [controllers.Profile, 'show'])
+        router.patch('profile', [controllers.Profile, 'update'])
         router.post('logout', [controllers.AccessTokens, 'destroy'])
 
         /**

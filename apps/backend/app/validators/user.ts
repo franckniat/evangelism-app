@@ -14,6 +14,23 @@ export const signupValidator = vine.create({
   email: email().unique({ table: 'users', column: 'email' }),
   password: password(),
   passwordConfirmation: password().sameAs('password'),
+
+  /**
+   * Église de rattachement, saisie libre. Facultative : on n'empêche pas
+   * quelqu'un de commencer à suivre des personnes parce qu'il n'a pas
+   * encore décidé quoi écrire ici.
+   */
+  church: vine.string().trim().maxLength(160).nullable().optional(),
+})
+
+/**
+ * Mise à jour du profil. Ni l'adresse ni le mot de passe : changer l'un ou
+ * l'autre déplace l'identité du compte et demande une vérification
+ * (courriel de confirmation, mot de passe actuel) qui n'existe pas encore.
+ */
+export const updateProfileValidator = vine.create({
+  fullName: vine.string().trim().minLength(1).maxLength(160).optional(),
+  church: vine.string().trim().maxLength(160).nullable().optional(),
 })
 
 /**
