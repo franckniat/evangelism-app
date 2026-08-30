@@ -10,7 +10,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "bundle": "node ../../node_modules/expo/bin/cli export --platform android --output-dir dist"
   },
   "dependencies": {
     "@expo-google-fonts/archivo": "^0.4.2",

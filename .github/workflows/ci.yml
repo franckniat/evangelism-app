@@ -68,6 +68,13 @@ jobs:
       - name: Générer une clé d'application
         run: echo "APP_KEY=$(openssl rand -base64 32)" >> "$GITHUB_ENV"
 
+      # `@moisson/core` est consommé compilé, pas en source : les trois
+      # applications lisent `packages/core/dist`. Il doit donc exister avant
+      # que quoi que ce soit d'autre démarre — y compris le serveur lancé
+      # plus bas pour produire le registre de routes.
+      - name: Compiler le paquet partagé
+        run: bun run --filter @moisson/core build
+
       # `.adonisjs/` n'est pas versionné : contrôleurs, événements et
       # registre de routes sont générés. Sans eux, `start/routes.ts` ne
       # résout pas ses imports et le typecheck échoue.
@@ -109,6 +116,18 @@ jobs:
       - name: Lancer les tests
         working-directory: apps/backend
         run: node ace test
+
+      # Les deux clients sont réellement empaquetés, et pas seulement
+      # typés. Deux pannes de résolution de modules ont vécu plusieurs
+      # jours dans le dépôt précisément parce que rien ne les construisait :
+      # elles passaient le typecheck et n'échouaient qu'au bundle.
+      - name: Empaqueter l'application mobile
+        run: bun run --filter @moisson/mobile bundle
+
+      - name: Construire l'application web
+        run: bun run --filter @moisson/web build
+        env:
+          API_URL: http://localhost:3333/api/v1
 
   secrets:
     name: Analyse anti-secret
