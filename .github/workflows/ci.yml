@@ -128,6 +128,12 @@ jobs:
         run: bun run --filter @moisson/web build
         env:
           API_URL: http://localhost:3333/api/v1
+          # Le reste du travail tourne en `development`, pour le serveur et
+          # ses tests. Next, lui, doit construire en `production` : sinon il
+          # mélange les variantes développement et production de React et
+          # échoue au prérendu, sur une erreur qui ne dit pas son nom
+          # (« Cannot read properties of null (reading 'useContext') »).
+          NODE_ENV: production
 
   secrets:
     name: Analyse anti-secret
