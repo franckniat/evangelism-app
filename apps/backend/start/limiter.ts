@@ -4,7 +4,7 @@ import limiter from '@adonisjs/limiter/services/main'
 /**
  * HTTP rate limits.
  *
- * A note on the numbers: Moisson targets Cameroon, where a large share of
+ * A note on the numbers: Harvest targets Cameroon, where a large share of
  * users reach the internet through mobile carrier NAT. Thousands of people
  * can share one public address, so per-IP limits are set to catch floods
  * rather than to be tight — a strict per-IP rule would lock out a whole

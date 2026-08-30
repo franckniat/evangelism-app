@@ -33,7 +33,7 @@ export default async function LayoutApplication({
             <span className="bg-primary text-primary-foreground flex size-7 items-center justify-center rounded-lg text-base font-semibold">
               +
             </span>
-            <span className="font-semibold tracking-tight">MOISSON</span>
+            <span className="font-semibold tracking-tight">HARVEST</span>
           </Link>
 
           <Navigation />

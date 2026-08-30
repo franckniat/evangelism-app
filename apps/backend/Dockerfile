@@ -1,14 +1,14 @@
 # syntax=docker/dockerfile:1
 
 # ---------------------------------------------------------------------------
-# L'API Moisson.
+# L'API Harvest.
 #
 # L'image se construit depuis la racine du dépôt, pas depuis ce dossier :
 # l'espace de travail Bun hisse les dépendances à la racine et le serveur
-# consomme `@moisson/core` compilé. Un contexte réduit à `apps/backend`
+# consomme `@harvest/core` compilé. Un contexte réduit à `apps/backend`
 # donnerait une image à laquelle il manque la moitié de ses modules.
 #
-#   docker build -f apps/backend/Dockerfile -t moisson-api .
+#   docker build -f apps/backend/Dockerfile -t harvest-api .
 # ---------------------------------------------------------------------------
 
 FROM oven/bun:1.3.14 AS constructeur
@@ -30,9 +30,9 @@ COPY tsconfig.base.json turbo.json ./
 COPY packages/core packages/core
 COPY apps/backend apps/backend
 
-# `@moisson/core` est consommé compilé : il doit exister avant que le serveur
+# `@harvest/core` est consommé compilé : il doit exister avant que le serveur
 # soit construit, sinon ses imports ne se résolvent pas.
-RUN bun run --filter @moisson/core build
+RUN bun run --filter @harvest/core build
 
 # `--ignore-ts-errors` : la vérification de types est le travail de la CI, pas
 # celui de l'image. Échouer ici donnerait la même information plus tard et
@@ -51,11 +51,11 @@ ENV PORT=3333
 WORKDIR /app
 
 # Les modules sont copiés depuis le constructeur plutôt que réinstallés : la
-# sortie de `ace build` référence `@moisson/core` en dépendance d'espace de
+# sortie de `ace build` référence `@harvest/core` en dépendance d'espace de
 # travail, qu'aucun `install` ne saurait résoudre hors du dépôt.
 #
 # Un seul `node_modules`, celui de la racine : Bun hisse tout, et rien ne
-# subsiste sous `apps/backend`. Le lien `@moisson/core` qu'il contient pointe
+# subsiste sous `apps/backend`. Le lien `@harvest/core` qu'il contient pointe
 # vers `packages/core`, copié juste au-dessus.
 COPY --from=constructeur /app/node_modules ./node_modules
 COPY --from=constructeur /app/packages/core/package.json ./packages/core/package.json

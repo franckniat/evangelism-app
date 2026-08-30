@@ -60,7 +60,7 @@ export default function OnboardingScreen() {
           <View style={styles.brandIcon}>
             <Feather name="plus" size={16} color={c.onAccent} />
           </View>
-          <Text style={styles.brand}>MOISSON</Text>
+          <Text style={styles.brand}>HARVEST</Text>
         </View>
         <Pressable onPress={goLogin} hitSlop={8}>
           <Text style={styles.skip}>{t.onb_skip}</Text>

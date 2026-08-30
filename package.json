@@ -1,8 +1,8 @@
 {
-  "name": "moisson",
+  "name": "harvest",
   "private": true,
   "version": "1.0.0",
-  "description": "Moisson — application collaborative de suivi d'évangélisation (mobile, web, desktop)",
+  "description": "Harvest — application collaborative de suivi d'évangélisation (mobile, web, desktop)",
   "license": "AGPL-3.0-only",
   "workspaces": [
     "apps/*",
@@ -14,10 +14,10 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "mobile": "bun run --filter @moisson/mobile dev",
-    "web": "bun run --filter @moisson/web dev",
-    "backend": "bun run --filter @moisson/backend dev",
-    "desktop": "bun run --filter @moisson/desktop dev"
+    "mobile": "bun run --filter @harvest/mobile dev",
+    "web": "bun run --filter @harvest/web dev",
+    "backend": "bun run --filter @harvest/backend dev",
+    "desktop": "bun run --filter @harvest/desktop dev"
   },
   "devDependencies": {
     "turbo": "^2.5.0"

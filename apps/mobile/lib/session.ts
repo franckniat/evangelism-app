@@ -14,7 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
-const KEY = 'moisson.session';
+const KEY = 'harvest.session';
 
 export type StoredSession = {
   accessToken: string;

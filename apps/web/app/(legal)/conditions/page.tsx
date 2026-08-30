@@ -13,9 +13,9 @@ export default function PageConditions() {
         que vous vous engagez à faire vis-à-vis d&apos;elles.
       </Encadre>
 
-      <Section titre="À quoi sert Moisson">
+      <Section titre="À quoi sert Harvest">
         <p>
-          Moisson sert à tenir le suivi de personnes rencontrées lors de
+          Harvest sert à tenir le suivi de personnes rencontrées lors de
           l&apos;évangélisation : les recontacter, planifier des visites, garder
           la trace des échanges. C&apos;est son seul objet.
         </p>
@@ -57,7 +57,7 @@ export default function PageConditions() {
         <ul>
           <li>
             <strong>Vendre, louer, céder ou publier</strong> les données
-            contenues dans Moisson, en totalité ou en partie.
+            contenues dans Harvest, en totalité ou en partie.
           </li>
           <li>
             <strong>Les employer à autre chose que le suivi</strong> :
@@ -101,7 +101,7 @@ export default function PageConditions() {
 
       <Section titre="Le service tel qu'il est">
         <p>
-          Moisson est un logiciel libre publié sous licence AGPL-3.0, fourni en
+          Harvest est un logiciel libre publié sous licence AGPL-3.0, fourni en
           l&apos;état et sans garantie. Il peut connaître des interruptions.
           C&apos;est un outil de suivi, pas un coffre-fort : gardez vos propres
           traces de ce qui compte pour vous.

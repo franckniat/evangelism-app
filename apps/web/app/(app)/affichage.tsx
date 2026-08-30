@@ -1,4 +1,4 @@
-import { STATUS_LABEL, localDateOf, offsetDays, type StatusKey } from "@moisson/core";
+import { STATUS_LABEL, localDateOf, offsetDays, type StatusKey } from "@harvest/core";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 /**
  * Les quelques bouts d'affichage que trois écrans se partagent.
  *
- * Les libellés de statut viennent de `@moisson/core` : le mobile et le web
+ * Les libellés de statut viennent de `@harvest/core` : le mobile et le web
  * doivent dire « En réflexion » de la même façon, sinon deux personnes
  * regardant le même dossier ne parlent plus du même état.
  */

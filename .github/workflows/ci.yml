@@ -25,9 +25,9 @@ jobs:
       postgres:
         image: postgres:17
         env:
-          POSTGRES_USER: moisson
-          POSTGRES_PASSWORD: moisson
-          POSTGRES_DB: moisson_test
+          POSTGRES_USER: harvest
+          POSTGRES_PASSWORD: harvest
+          POSTGRES_DB: harvest_test
         ports:
           - 5432:5432
         options: >-
@@ -44,7 +44,7 @@ jobs:
       LOG_LEVEL: warn
       APP_URL: http://localhost:3333
       SESSION_DRIVER: memory
-      DATABASE_URL: postgresql://moisson:moisson@localhost:5432/moisson_test
+      DATABASE_URL: postgresql://harvest:harvest@localhost:5432/harvest_test
       DB_SSL: false
       # En mémoire : les compteurs ne doivent pas fuir d'un test à l'autre.
       LIMITER_STORE: memory
@@ -68,12 +68,12 @@ jobs:
       - name: Générer une clé d'application
         run: echo "APP_KEY=$(openssl rand -base64 32)" >> "$GITHUB_ENV"
 
-      # `@moisson/core` est consommé compilé, pas en source : les trois
+      # `@harvest/core` est consommé compilé, pas en source : les trois
       # applications lisent `packages/core/dist`. Il doit donc exister avant
       # que quoi que ce soit d'autre démarre — y compris le serveur lancé
       # plus bas pour produire le registre de routes.
       - name: Compiler le paquet partagé
-        run: bun run --filter @moisson/core build
+        run: bun run --filter @harvest/core build
 
       # `.adonisjs/` n'est pas versionné : contrôleurs, événements et
       # registre de routes sont générés. Sans eux, `start/routes.ts` ne
@@ -122,10 +122,10 @@ jobs:
       # jours dans le dépôt précisément parce que rien ne les construisait :
       # elles passaient le typecheck et n'échouaient qu'au bundle.
       - name: Empaqueter l'application mobile
-        run: bun run --filter @moisson/mobile bundle
+        run: bun run --filter @harvest/mobile bundle
 
       - name: Construire l'application web
-        run: bun run --filter @moisson/web build
+        run: bun run --filter @harvest/web build
         env:
           API_URL: http://localhost:3333/api/v1
           # Le reste du travail tourne en `development`, pour le serveur et
@@ -153,7 +153,7 @@ jobs:
           file: apps/backend/Dockerfile
           push: false
           load: true
-          tags: moisson-api:ci
+          tags: harvest-api:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -162,7 +162,7 @@ jobs:
       # que le serveur écoute.
       - name: Démarrer l'image
         run: |
-          cat > /tmp/moisson.env <<'FIN'
+          cat > /tmp/harvest.env <<'FIN'
           NODE_ENV=production
           HOST=0.0.0.0
           PORT=3333
@@ -174,21 +174,21 @@ jobs:
           LIMITER_STORE=database
           QUEUE_ENABLED=false
           FIN
-          echo "APP_KEY=$(openssl rand -base64 32)" >> /tmp/moisson.env
+          echo "APP_KEY=$(openssl rand -base64 32)" >> /tmp/harvest.env
 
-          docker run -d --name moisson-api -p 3333:3333 --env-file /tmp/moisson.env moisson-api:ci
+          docker run -d --name harvest-api -p 3333:3333 --env-file /tmp/harvest.env harvest-api:ci
 
           for _ in $(seq 1 30); do
             if curl -fsS http://localhost:3333/ > /dev/null; then
               echo "L'API répond."
-              docker rm -f moisson-api > /dev/null
+              docker rm -f harvest-api > /dev/null
               exit 0
             fi
             sleep 2
           done
 
           echo "L'API n'a pas répondu. Journal du conteneur :"
-          docker logs moisson-api
+          docker logs harvest-api
           exit 1
 
   secrets:

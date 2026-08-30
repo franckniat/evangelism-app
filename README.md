@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌱 Moisson
+# 🌱 Harvest
 
 **Application collaborative de suivi d'évangélisation — mobile, web et desktop.**
 
@@ -16,7 +16,7 @@
 
 ## À propos
 
-**Moisson** aide les évangélistes à récolter et suivre les personnes rencontrées lors de
+**Harvest** aide les évangélistes à récolter et suivre les personnes rencontrées lors de
 l'évangélisation, organisées par **secteur**, et à travailler **en équipe**.
 
 Plutôt que de disperser les contacts dans des carnets ou des conversations WhatsApp, l'application
@@ -44,18 +44,18 @@ tolérance au réseau instable (les données restent consultables hors connexion
 Monorepo géré avec **Bun workspaces** et **Turborepo**.
 
 ```
-moisson/
+harvest/
 ├─ apps/
 │  ├─ mobile/     Expo SDK 54 · Expo Router 6
 │  ├─ web/        Next.js 16.3 · shadcn/ui · Tailwind v4
 │  ├─ desktop/    Tauri v2 (enveloppe l'application web)
 │  └─ backend/    AdonisJS 7 — API REST
 └─ packages/
-   └─ core/       @moisson/core — types, i18n, thème, logique partagée
+   └─ core/       @harvest/core — types, i18n, thème, logique partagée
 ```
 
 Les trois clients consomment la **même API**. La logique métier commune (types, statuts, traductions,
-calculs d'échéance, jetons de thème) vit dans `@moisson/core` afin de n'être écrite qu'une fois.
+calculs d'échéance, jetons de thème) vit dans `@harvest/core` afin de n'être écrite qu'une fois.
 
 ## Prérequis
 
@@ -175,7 +175,7 @@ Distribué sous licence **[AGPL-3.0-only](LICENSE)** (GNU Affero General Public 
 Vous pouvez librement utiliser, étudier, modifier et redistribuer ce logiciel. En contrepartie, toute
 version modifiée doit rester sous la même licence — **y compris si vous l'exploitez comme service en
 ligne sans en distribuer le code**. C'est la clause qui distingue l'AGPL : elle garantit qu'un service
-dérivé de Moisson reste ouvert et vérifiable, ce qui compte particulièrement pour une application qui
+dérivé de Harvest reste ouvert et vérifiable, ce qui compte particulièrement pour une application qui
 manipule des données personnelles sensibles.
 
 > ⚠️ Si vous hébergez votre propre instance, l'article 13 de la licence vous oblige à proposer à vos
@@ -186,7 +186,7 @@ conditions d'utilisation de l'instance concernée et du droit applicable à la p
 personnelles.
 
 ```
-Moisson — application collaborative de suivi d'évangélisation
+Harvest — application collaborative de suivi d'évangélisation
 Copyright (C) 2026 Franck Niat
 
 Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier selon

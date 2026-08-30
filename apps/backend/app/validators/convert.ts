@@ -1,5 +1,5 @@
 import vine from '@vinejs/vine'
-import { STATUS_ORDER } from '@moisson/core'
+import { STATUS_ORDER } from '@harvest/core'
 import { VISIT_STATUSES } from '#models/visit'
 
 /**

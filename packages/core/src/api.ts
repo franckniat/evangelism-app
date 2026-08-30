@@ -7,7 +7,7 @@
  * des deux — ce qui toucherait soit les migrations, soit les quatorze écrans
  * déjà écrits — la traduction est faite ici, à un seul endroit.
  *
- * Ce fichier vit dans `@moisson/core` parce que le mobile et le web
+ * Ce fichier vit dans `@harvest/core` parce que le mobile et le web
  * consomment la même API : la conversion ne doit exister qu'une fois.
  */
 import { STATUS_LABEL, type StatusKey } from './status.js';

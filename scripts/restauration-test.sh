@@ -24,7 +24,7 @@ if [ ! -f "$archive" ]; then
   exit 1
 fi
 
-base="moisson_epreuve_$(date +%s)"
+base="harvest_epreuve_$(date +%s)"
 # On dérive l'URL de la base d'épreuve de l'URL d'administration sans jamais
 # afficher l'une ni l'autre : elles contiennent un mot de passe.
 url_epreuve="$(printf '%s' "$ADMIN_URL" | sed -E "s#/[^/?]+(\?|\$)#/${base}\1#")"

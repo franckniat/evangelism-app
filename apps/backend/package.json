@@ -1,5 +1,5 @@
 {
-  "name": "@moisson/backend",
+  "name": "@harvest/backend",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -66,7 +66,7 @@
     "@adonisjs/session": "^8.1.0",
     "@adonisjs/shield": "^9.0.0",
     "@japa/api-client": "^3.2.1",
-    "@moisson/core": "workspace:*",
+    "@harvest/core": "workspace:*",
     "@tuyau/core": "^1.2.2",
     "@vinejs/vine": "^4.4.0",
     "argon2": "^0.45.1",

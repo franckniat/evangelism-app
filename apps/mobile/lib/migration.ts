@@ -1,7 +1,7 @@
 /**
  * Reprise des données saisies avant que le serveur n'existe.
  *
- * Les versions locales de Moisson fabriquaient leurs identifiants avec
+ * Les versions locales de Harvest fabriquaient leurs identifiants avec
  * l'horloge (`k1738…`, `s1738…`). Le serveur, lui, n'accepte que des UUID.
  * Sans cette reprise, la première synchronisation remplacerait le contenu de
  * l'appareil par celui du compte — vide — et effacerait sans un mot le
@@ -12,7 +12,7 @@
  * reste. Elle sait déjà attendre le réseau et signaler un refus.
  */
 import * as Crypto from 'expo-crypto';
-import type { Convert, Sector } from '@moisson/core';
+import type { Convert, Sector } from '@harvest/core';
 
 import { payloadFromConvert } from '@/lib/types';
 import { enqueue } from '@/lib/outbox';

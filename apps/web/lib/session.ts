@@ -12,8 +12,8 @@ import { cookies } from "next/headers";
  * `sameSite: lax` ferme la seconde : un formulaire hébergé ailleurs ne peut
  * pas faire écrire l'API en se servant de la session de la personne.
  */
-const ACCES = "moisson_acces";
-const RAFRAICHISSEMENT = "moisson_rafraichissement";
+const ACCES = "harvest_acces";
+const RAFRAICHISSEMENT = "harvest_rafraichissement";
 
 /** Trente jours : la durée de vie d'une famille de jetons côté serveur. */
 const DUREE_RAFRAICHISSEMENT = 30 * 24 * 60 * 60;

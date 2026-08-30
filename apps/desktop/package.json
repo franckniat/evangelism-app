@@ -1,8 +1,8 @@
 {
-  "name": "@moisson/desktop",
+  "name": "@harvest/desktop",
   "version": "1.0.0",
   "private": true,
-  "description": "Moisson — application desktop (Tauri) enveloppant l'application web",
+  "description": "Harvest — application desktop (Tauri) enveloppant l'application web",
   "scripts": {
     "dev": "tauri dev",
     "build": "tauri build",

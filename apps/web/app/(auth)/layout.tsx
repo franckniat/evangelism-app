@@ -7,7 +7,7 @@ export default function LayoutAuth({ children }: { children: React.ReactNode }) 
         <span className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-lg text-lg font-semibold">
           +
         </span>
-        <span className="text-lg font-semibold tracking-tight">MOISSON</span>
+        <span className="text-lg font-semibold tracking-tight">HARVEST</span>
       </Link>
 
       {children}

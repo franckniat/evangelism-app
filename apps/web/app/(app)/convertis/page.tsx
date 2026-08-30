@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { STATUS_LABEL, STATUS_ORDER } from "@moisson/core";
+import { STATUS_LABEL, STATUS_ORDER } from "@harvest/core";
 
 import { BadgeStatut, Echeance, Initiales } from "@/app/(app)/affichage";
 import { Button } from "@/components/ui/button";

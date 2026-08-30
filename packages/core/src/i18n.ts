@@ -174,7 +174,7 @@ const fr = {
   lock_title: 'Application verrouillée',
   lock_sub: 'Authentifiez-vous pour continuer',
   lock_unlock: 'Déverrouiller',
-  lock_prompt: 'Déverrouiller Moisson',
+  lock_prompt: 'Déverrouiller Harvest',
 
   // Due labels
   due_today: "Aujourd'hui",
@@ -368,7 +368,7 @@ const en: Dict = {
   lock_title: 'App locked',
   lock_sub: 'Authenticate to continue',
   lock_unlock: 'Unlock',
-  lock_prompt: 'Unlock Moisson',
+  lock_prompt: 'Unlock Harvest',
 
   due_today: 'Today',
   due_in: 'In',

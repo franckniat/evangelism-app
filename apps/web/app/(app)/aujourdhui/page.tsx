@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { VisitDto } from "@moisson/core";
+import type { VisitDto } from "@harvest/core";
 
 import { cloreVisite } from "@/app/(app)/actions";
 import { Echeance } from "@/app/(app)/affichage";

@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata = {
-  // `absolute` : sans quoi le gabarit de la racine y ajouterait « — Moisson ».
-  title: { absolute: "Moisson — suivi d'évangélisation" },
+  // `absolute` : sans quoi le gabarit de la racine y ajouterait « — Harvest ».
+  title: { absolute: "Harvest — suivi d'évangélisation" },
   description:
     "Enregistrez les personnes rencontrées, planifiez les visites, ne perdez personne de vue. Logiciel libre, sous licence AGPL-3.0.",
 };
@@ -35,7 +35,7 @@ export default function PagePublique() {
           <span className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-lg text-lg font-semibold">
             +
           </span>
-          <span className="text-lg font-semibold tracking-tight">MOISSON</span>
+          <span className="text-lg font-semibold tracking-tight">HARVEST</span>
         </span>
 
         <div className="ml-auto flex items-center gap-2">
@@ -104,7 +104,7 @@ export default function PagePublique() {
           </Link>
         </nav>
         <p className="text-muted-foreground text-sm">
-          Moisson est un logiciel libre, publié sous licence AGPL-3.0. Le code
+          Harvest est un logiciel libre, publié sous licence AGPL-3.0. Le code
           est consultable, modifiable et redistribuable par tous.
         </p>
       </footer>

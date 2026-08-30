@@ -10,20 +10,20 @@
  * (`lib/session`), jamais dans AsyncStorage — qui n'est qu'un fichier.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { AppNotification, Convert, Sector, Settings, UserDto } from '@moisson/core';
+import type { AppNotification, Convert, Sector, Settings, UserDto } from '@harvest/core';
 
 import type { Lang } from '@/constants/i18n';
 
 export const KEYS = {
-  introSeen: 'moisson:introSeen',
-  user: 'moisson:user',
-  photoUri: 'moisson:photoUri',
-  converts: 'moisson:converts',
-  sectors: 'moisson:sectors',
-  plannedVisits: 'moisson:plannedVisits',
-  notifications: 'moisson:notifications',
-  lang: 'moisson:lang',
-  settings: 'moisson:settings',
+  introSeen: 'harvest:introSeen',
+  user: 'harvest:user',
+  photoUri: 'harvest:photoUri',
+  converts: 'harvest:converts',
+  sectors: 'harvest:sectors',
+  plannedVisits: 'harvest:plannedVisits',
+  notifications: 'harvest:notifications',
+  lang: 'harvest:lang',
+  settings: 'harvest:settings',
 } as const;
 
 /**

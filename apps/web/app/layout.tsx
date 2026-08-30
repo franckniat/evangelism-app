@@ -21,8 +21,8 @@ const policeMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Moisson — suivi d'évangélisation",
-    template: "%s — Moisson",
+    default: "Harvest — suivi d'évangélisation",
+    template: "%s — Harvest",
   },
   description:
     "Enregistrez les personnes rencontrées, planifiez les visites, ne perdez personne de vue.",

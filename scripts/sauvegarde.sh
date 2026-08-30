@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Sauvegarde de la base Moisson.
+# Sauvegarde de la base Harvest.
 #
 # Ce que contient le fichier produit : les noms, numéros et positions
 # religieuses de personnes qui n'ont jamais ouvert de compte. Une sauvegarde
@@ -11,7 +11,7 @@
 #   DATABASE_URL=… DESTINATION=/var/sauvegardes ./scripts/sauvegarde.sh
 #
 # Prévu pour être appelé par cron. Exemple, toutes les nuits à 2 h 15 :
-#   15 2 * * * DATABASE_URL=… DESTINATION=… /chemin/scripts/sauvegarde.sh >> /var/log/moisson-sauvegarde.log 2>&1
+#   15 2 * * * DATABASE_URL=… DESTINATION=… /chemin/scripts/sauvegarde.sh >> /var/log/harvest-sauvegarde.log 2>&1
 
 set -euo pipefail
 
@@ -20,7 +20,7 @@ DESTINATION="${DESTINATION:-./sauvegardes}"
 RETENTION_JOURS="${RETENTION_JOURS:-14}"
 
 horodatage="$(date +%Y%m%d-%H%M%S)"
-fichier="${DESTINATION}/moisson-${horodatage}.dump"
+fichier="${DESTINATION}/harvest-${horodatage}.dump"
 
 mkdir -p "$DESTINATION"
 
@@ -45,5 +45,5 @@ fi
 
 # Rotation. La suppression vient après la vérification, jamais avant : on ne
 # jette une ancienne sauvegarde qu'une fois la nouvelle prouvée lisible.
-supprimees="$(find "$DESTINATION" -name 'moisson-*.dump' -type f -mtime "+${RETENTION_JOURS}" -print -delete | wc -l)"
+supprimees="$(find "$DESTINATION" -name 'harvest-*.dump' -type f -mtime "+${RETENTION_JOURS}" -print -delete | wc -l)"
 echo "$(date -Is) rotation : ${supprimees} archive(s) de plus de ${RETENTION_JOURS} jours supprimée(s)"

@@ -6,7 +6,7 @@ export default function PageConfidentialite() {
   return (
     <Article titre="Politique de confidentialité" date={DERNIERE_MISE_A_JOUR}>
       <Encadre>
-        Moisson contient des informations sur des personnes qui n&apos;ont
+        Harvest contient des informations sur des personnes qui n&apos;ont
         jamais ouvert de compte : leur nom, leur numéro, et leur position vis-à-vis
         de la foi. C&apos;est une donnée sensible dans beaucoup de contextes, et
         dangereuse dans certains. Ce document dit ce qui en est fait.
@@ -104,9 +104,9 @@ export default function PageConfidentialite() {
         </p>
       </Section>
 
-      <Section titre="Être retiré de Moisson">
+      <Section titre="Être retiré de Harvest">
         <p>
-          Si vous découvrez que vos coordonnées figurent dans Moisson et que
+          Si vous découvrez que vos coordonnées figurent dans Harvest et que
           vous ne le souhaitez pas, deux chemins :
         </p>
         <ul>

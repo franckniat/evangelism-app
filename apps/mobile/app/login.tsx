@@ -53,7 +53,7 @@ export default function LoginScreen() {
             <View style={styles.brandIcon}>
               <Feather name="plus" size={24} color={c.onAccent} />
             </View>
-            <Text style={styles.brand}>MOISSON</Text>
+            <Text style={styles.brand}>HARVEST</Text>
           </View>
           <Text style={styles.sub}>{t.login_sub}</Text>
 

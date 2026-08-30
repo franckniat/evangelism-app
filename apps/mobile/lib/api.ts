@@ -1,5 +1,5 @@
 /**
- * Le client HTTP de Moisson.
+ * Le client HTTP de Harvest.
  *
  * Trois choses lui sont demandées, et rien d'autre :
  *
@@ -11,7 +11,7 @@
  *  3. ne jamais laisser filtrer un jeton ailleurs que dans l'en-tête
  *     `Authorization`.
  */
-import type { AuthDto, ConvertDto, EventDto, SectorDto, UserDto, VisitDto } from '@moisson/core';
+import type { AuthDto, ConvertDto, EventDto, SectorDto, UserDto, VisitDto } from '@harvest/core';
 
 import { API_URL } from '@/lib/config';
 import { clearSession, loadSession, saveSession, type StoredSession } from '@/lib/session';

@@ -1,9 +1,9 @@
 {
-  "name": "@moisson/core",
+  "name": "@harvest/core",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Logique métier et types partagés de Moisson (mobile, web, desktop)",
+  "description": "Logique métier et types partagés de Harvest (mobile, web, desktop)",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

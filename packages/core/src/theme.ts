@@ -1,5 +1,5 @@
 /**
- * Moisson — système de design (style minimaliste type shadcn/ui).
+ * Harvest — système de design (style minimaliste type shadcn/ui).
  * Police Bricolage Grotesque, bleu comme couleur principale, jetons
  * sémantiques déclinés
  * en thème clair et sombre.

@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // `@moisson/core` est publié en TypeScript source (monorepo) : Next doit le
+  // `@harvest/core` est publié en TypeScript source (monorepo) : Next doit le
   // transpiler comme le reste de l'application.
-  transpilePackages: ["@moisson/core"],
+  transpilePackages: ["@harvest/core"],
 };
 
 export default nextConfig;

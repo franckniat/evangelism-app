@@ -1,18 +1,18 @@
 {
   "$schema": "../../../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "Moisson",
+  "productName": "Harvest",
   "version": "1.0.0",
-  "identifier": "org.moisson.app",
+  "identifier": "org.harvest.app",
   "build": {
     "frontendDist": "../../web/out",
     "devUrl": "http://localhost:3000",
-    "beforeDevCommand": "bun run --filter @moisson/web dev",
-    "beforeBuildCommand": "bun run --filter @moisson/web build"
+    "beforeDevCommand": "bun run --filter @harvest/web dev",
+    "beforeBuildCommand": "bun run --filter @harvest/web build"
   },
   "app": {
     "windows": [
       {
-        "title": "Moisson",
+        "title": "Harvest",
         "width": 1200,
         "height": 800,
         "minWidth": 900,

@@ -1,5 +1,5 @@
 /**
- * @moisson/core — code partagé, framework-agnostique (aucun import
+ * @harvest/core — code partagé, framework-agnostique (aucun import
  * React Native / Expo / DOM). Consommé par le mobile, le web, le desktop
  * et le serveur.
  *

@@ -32,7 +32,7 @@ export type Session = {
 /**
  * Why a token pair rather than one long-lived token
  * -------------------------------------------------
- * A single token that never expires cannot be taken back. Moisson holds the
+ * A single token that never expires cannot be taken back. Harvest holds the
  * names and phone numbers of people who never signed up for it, so "the
  * attacker keeps access until someone notices" is not an acceptable failure
  * mode.

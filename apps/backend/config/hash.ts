@@ -7,7 +7,7 @@ import { defineConfig, drivers } from '@adonisjs/core/hash'
  * password storage: it resists both GPU cracking (memory-hard) and
  * side-channel attacks (data-independent first pass).
  *
- * Moisson stores the identities of people who never signed up for it, so a
+ * Harvest stores the identities of people who never signed up for it, so a
  * compromised account is a compromised address book. The cost parameters
  * below are the OWASP baseline, not the library defaults.
  */

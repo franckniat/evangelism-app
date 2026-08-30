@@ -59,8 +59,8 @@ test.group('Sessions — inventaire', () => {
     client,
     assert,
   }) => {
-    const a = await signup(client, 'inventaire@example.test', 'MoissonTest AppareilA')
-    await login(client, 'inventaire@example.test', 'MoissonTest AppareilB')
+    const a = await signup(client, 'inventaire@example.test', 'HarvestTest AppareilA')
+    await login(client, 'inventaire@example.test', 'HarvestTest AppareilB')
 
     const liste = await sessions(client, a.accessToken.value)
 
@@ -80,12 +80,12 @@ test.group('Sessions — inventaire', () => {
   })
 
   test('une rotation ne crée pas de seconde session', async ({ client, assert }) => {
-    const a = await signup(client, 'rotation-session@example.test', 'MoissonTest AppareilA')
+    const a = await signup(client, 'rotation-session@example.test', 'HarvestTest AppareilA')
     const avant = await sessions(client, a.accessToken.value)
 
     const rafraichi = await client
       .post('/api/v1/auth/refresh')
-      .header('user-agent', 'MoissonTest AppareilA')
+      .header('user-agent', 'HarvestTest AppareilA')
       .json({ refreshToken: a.refreshToken.value })
 
     const apres = await sessions(client, rafraichi.body().data.accessToken.value)
@@ -97,8 +97,8 @@ test.group('Sessions — inventaire', () => {
 
 test.group('Sessions — révocation', () => {
   test("révoquer une session tue aussi ses jetons d'accès", async ({ client, assert }) => {
-    const a = await signup(client, 'revocation@example.test', 'MoissonTest AppareilA')
-    const b = await login(client, 'revocation@example.test', 'MoissonTest AppareilB')
+    const a = await signup(client, 'revocation@example.test', 'HarvestTest AppareilA')
+    const b = await login(client, 'revocation@example.test', 'HarvestTest AppareilB')
 
     const liste = await sessions(client, a.accessToken.value)
     const autre = requis(
@@ -128,9 +128,9 @@ test.group('Sessions — révocation', () => {
   })
 
   test('« déconnecter les autres » épargne l’appareil qui demande', async ({ client, assert }) => {
-    const a = await signup(client, 'autres@example.test', 'MoissonTest AppareilA')
-    await login(client, 'autres@example.test', 'MoissonTest AppareilB')
-    await login(client, 'autres@example.test', 'MoissonTest AppareilC')
+    const a = await signup(client, 'autres@example.test', 'HarvestTest AppareilA')
+    await login(client, 'autres@example.test', 'HarvestTest AppareilB')
+    await login(client, 'autres@example.test', 'HarvestTest AppareilC')
 
     assert.lengthOf(await sessions(client, a.accessToken.value), 3)
 
@@ -148,8 +148,8 @@ test.group('Sessions — révocation', () => {
 
 test.group('Sessions — cloisonnement entre comptes', () => {
   test('la session d’autrui est introuvable, pas interdite', async ({ client, assert }) => {
-    const victime = await signup(client, 'victime@example.test', 'MoissonTest Victime')
-    const intrus = await signup(client, 'intrus@example.test', 'MoissonTest Intrus')
+    const victime = await signup(client, 'victime@example.test', 'HarvestTest Victime')
+    const intrus = await signup(client, 'intrus@example.test', 'HarvestTest Intrus')
 
     const [laSienne] = await sessions(client, victime.accessToken.value)
 
@@ -167,17 +167,17 @@ test.group('Sessions — cloisonnement entre comptes', () => {
   })
 
   test('chacun ne voit que ses propres sessions', async ({ client, assert }) => {
-    await signup(client, 'cloison-a@example.test', 'MoissonTest A')
-    const b = await signup(client, 'cloison-b@example.test', 'MoissonTest B')
+    await signup(client, 'cloison-a@example.test', 'HarvestTest A')
+    const b = await signup(client, 'cloison-b@example.test', 'HarvestTest B')
 
     const vueDeB = await sessions(client, b.accessToken.value)
 
     assert.lengthOf(vueDeB, 1)
-    assert.include(vueDeB[0].userAgent ?? '', 'MoissonTest B')
+    assert.include(vueDeB[0].userAgent ?? '', 'HarvestTest B')
   })
 
   test('un identifiant qui n’est pas un UUID est rejeté proprement', async ({ client }) => {
-    const a = await signup(client, 'uuid@example.test', 'MoissonTest A')
+    const a = await signup(client, 'uuid@example.test', 'HarvestTest A')
 
     const response = await client
       .delete('/api/v1/account/sessions/pas-un-uuid')

@@ -5,7 +5,7 @@ import {
   STATUS_ORDER,
   statusTransitionLabel,
   type EventDto,
-} from "@moisson/core";
+} from "@harvest/core";
 
 import {
   changerStatut,

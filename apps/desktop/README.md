@@ -1,6 +1,6 @@
-# Moisson — Desktop (Tauri)
+# Harvest — Desktop (Tauri)
 
-Application desktop qui enveloppe l'application web `@moisson/web`.
+Application desktop qui enveloppe l'application web `@harvest/web`.
 Elle consomme la même API AdonisJS que le mobile et le web.
 
 ## Prérequis
@@ -12,7 +12,7 @@ Elle consomme la même API AdonisJS que le mobile et le web.
 ## Développement
 
 ```bash
-bun run --filter @moisson/desktop dev
+bun run --filter @harvest/desktop dev
 ```
 
 `beforeDevCommand` démarre automatiquement le serveur Next.js, puis Tauri

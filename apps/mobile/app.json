@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Moisson",
-    "slug": "evangelism-app",
+    "name": "Harvest",
+    "slug": "harvest-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "evangelismapp",
+    "scheme": "harvest",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -42,19 +42,19 @@
       [
         "expo-contacts",
         {
-          "contactsPermission": "Moisson enregistre les convertis dans vos contacts."
+          "contactsPermission": "Harvest enregistre les convertis dans vos contacts."
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "Moisson accède à vos photos pour définir votre photo de profil."
+          "photosPermission": "Harvest accède à vos photos pour définir votre photo de profil."
         }
       ],
       [
         "expo-local-authentication",
         {
-          "faceIDPermission": "Moisson utilise Face ID pour déverrouiller l'application."
+          "faceIDPermission": "Harvest utilise Face ID pour déverrouiller l'application."
         }
       ],
       "expo-notifications",

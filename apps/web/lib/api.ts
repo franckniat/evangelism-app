@@ -7,7 +7,7 @@ import type {
   SectorDto,
   UserDto,
   VisitDto,
-} from "@moisson/core";
+} from "@harvest/core";
 
 import { lireJetons } from "@/lib/session";
 
