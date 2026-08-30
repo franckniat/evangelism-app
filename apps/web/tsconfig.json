@@ -19,9 +19,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"],
-      "@moisson/core": ["../../packages/core/src/index.ts"],
-      "@moisson/core/*": ["../../packages/core/src/*"]
+      "@/*": ["./*"]
     }
   },
   "include": [

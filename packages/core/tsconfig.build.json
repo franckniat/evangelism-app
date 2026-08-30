@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "dist",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+
+    /**
+     * `nodenext` et non `bundler` : la sortie doit être consommable par Node
+     * en ESM, ce qui exige des spécificateurs complets. C'est aussi ce qui
+     * rend les extensions `.js` des sources nécessaires — et correctes.
+     */
+    "module": "nodenext",
+    "moduleResolution": "nodenext"
+  },
+  "include": ["src/**/*.ts"]
+}

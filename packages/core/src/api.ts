@@ -10,7 +10,7 @@
  * Ce fichier vit dans `@moisson/core` parce que le mobile et le web
  * consomment la même API : la conversion ne doit exister qu'une fois.
  */
-import type { StatusKey } from './status.js';
+import { STATUS_LABEL, type StatusKey } from './status.js';
 import type { Convert, HistoryEntry, Sector, Sexe } from './types.js';
 import type { Dict, Lang } from './i18n.js';
 
@@ -173,11 +173,29 @@ export function sectorFromDto(dto: SectorDto): Sector {
 export function historyFromEvents(events: EventDto[], t: Dict, lang: Lang): HistoryEntry[] {
   return events.map((e) => ({
     date: shortDate(e.createdAt, lang),
-    text: eventLabel(e, t),
+    text: eventLabel(e, t, lang),
   }));
 }
 
-function eventLabel(e: EventDto, t: Dict): string {
+/**
+ * Le serveur enregistre une transition de statut sous sa forme brute —
+ * « reflexion → sauve ». Ce sont des clés, pas des mots : les afficher
+ * telles quelles montre à l'utilisateur le vocabulaire de la base de
+ * données au lieu du sien.
+ */
+export function statusTransitionLabel(texte: string | null, lang: Lang): string {
+  if (!texte) return '';
+
+  return texte
+    .split('→')
+    .map((partie) => {
+      const cle = partie.trim() as StatusKey;
+      return STATUS_LABEL[cle] ? STATUS_LABEL[cle][lang] : partie.trim();
+    })
+    .join(' → ');
+}
+
+function eventLabel(e: EventDto, t: Dict, lang: Lang): string {
   switch (e.type) {
     case 'created':
       return t.hist_first;
@@ -186,7 +204,7 @@ function eventLabel(e: EventDto, t: Dict): string {
     case 'visit_done':
       return e.text ? `${t.hist_visit_done} — ${e.text}` : t.hist_visit_done;
     case 'status_changed':
-      return `${t.hist_status} : ${e.text ?? ''}`.trim();
+      return `${t.hist_status} : ${statusTransitionLabel(e.text, lang)}`.trim();
     case 'call':
       return e.text ? `${t.hist_call} — ${e.text}` : t.hist_call;
     case 'note':

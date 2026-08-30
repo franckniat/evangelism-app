@@ -48,8 +48,21 @@ export const throttleSignup = limiter.define('signup', (ctx) => {
 })
 
 /**
- * Session management. Tied to the authenticated user rather than the address,
- * which is both fairer behind NAT and the right unit for these routes.
+ * Les routes métier, comptées par utilisateur plutôt que par adresse — plus
+ * juste derrière un NAT, et c'est de toute façon la bonne unité ici.
+ *
+ * Le plafond a été relevé de 60 à 600 après avoir branché le tableau de bord
+ * web. Une page rendue côté serveur émet plusieurs appels : le profil, les
+ * données de l'écran, la liste des secteurs. Soixante requêtes par quart
+ * d'heure, c'est une poignée de navigations — la limite tombait sur des
+ * utilisateurs qui n'avaient rien fait d'anormal.
+ *
+ * Ce que ce plafond protège, ce n'est pas la charge : c'est l'extraction en
+ * masse du fichier. À 600 requêtes de 100 dossiers, il reste possible de
+ * beaucoup aspirer, et c'est assumé — la vraie parade est ailleurs
+ * (journal d'audit, alerte sur volume inhabituel), et elle reste à écrire.
+ * Un plafond si bas qu'il gêne l'usage normal ne protège personne : il
+ * apprend seulement à l'utilisateur à se méfier de son outil.
  */
 export const throttleSessions = limiter.define('sessions', (ctx) => {
   if (!parAdresseActivee) return limiter.noLimit()
@@ -60,5 +73,5 @@ export const throttleSessions = limiter.define('sessions', (ctx) => {
     return limiter.allowRequests(30).every('15 minutes').usingKey(ctx.request.ip())
   }
 
-  return limiter.allowRequests(60).every('15 minutes').usingKey(`user_${userId}`)
+  return limiter.allowRequests(600).every('15 minutes').usingKey(`user_${userId}`)
 })
