@@ -1,12 +1,13 @@
 import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Chip } from '@/components/ui/Chip';
+import { DatePickerModal } from '@/components/ui/DatePickerModal';
 import { StackHeader } from '@/components/ui/StackHeader';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { STATUS_LABEL, STATUS_ORDER } from '@/constants/status';
@@ -24,6 +25,7 @@ export default function ConvertDetailScreen() {
   const styles = useMemo(() => makeStyles(cols), [cols]);
   const { showToast } = useToast();
   const router = useRouter();
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   /**
    * Le fil d'activité n'accompagne pas la liste — cinquante entrées par
@@ -56,8 +58,9 @@ export default function ConvertDetailScreen() {
     setStatus(c.id, key);
     showToast(t.toast_status);
   };
-  const onPlan = async () => {
-    await planVisit(c.id);
+  const onPickDate = async (iso: string) => {
+    setPickerOpen(false);
+    await planVisit(c.id, iso);
     showToast(t.toast_visit);
   };
   const onDelete = () => {
@@ -125,13 +128,19 @@ export default function ConvertDetailScreen() {
         </View>
 
         <Text style={styles.h6}>{t.detail_next}</Text>
-        <View style={styles.nextCard}>
+        <Pressable style={styles.nextCard} onPress={() => setPickerOpen(true)}>
           <Feather name="calendar" size={20} color={cols.accent} />
           <Text style={styles.nextLabel}>{c.nextVisit ? c.dueLabelText : t.detail_novisit}</Text>
-          <Pressable onPress={onPlan}>
-            <Text style={styles.planLink}>{t.a_planvisit}</Text>
-          </Pressable>
-        </View>
+          <Text style={styles.planLink}>{t.plan_pick}</Text>
+        </Pressable>
+
+        <DatePickerModal
+          visible={pickerOpen}
+          value={c.nextVisit}
+          onSelect={onPickDate}
+          onClose={() => setPickerOpen(false)}
+          title={t.plan_title}
+        />
 
         <Text style={styles.h6}>{t.detail_notes}</Text>
         <Text style={styles.notes}>{c.notes}</Text>

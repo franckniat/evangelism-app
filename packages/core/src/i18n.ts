@@ -211,6 +211,45 @@ const fr = {
   login_offline: 'Serveur injoignable — vérifiez votre connexion',
   register_email_needed: 'Une adresse e-mail est nécessaire pour créer un compte',
   register_weak_password: 'Le mot de passe doit faire au moins 8 caractères',
+  // Onboarding des secteurs
+  setup_title: 'Vos secteurs de prédication',
+  setup_sub: 'Ajoutez les zones où vous évangélisez souvent. Elles seront prêtes quand vous enregistrerez un converti.',
+  setup_add: 'Ajouter ce secteur',
+  setup_name_ph: 'Nom du secteur (Akwa, Bonabéri…)',
+  setup_city_ph: 'Ville (facultatif)',
+  setup_added: 'Secteurs ajoutés',
+  setup_finish: 'Terminer',
+  setup_skip: 'Plus tard',
+  setup_empty_hint: 'Vous pourrez toujours en ajouter depuis « Secteurs ».',
+
+  // Signal « aucun secteur »
+  no_sectors_title: 'Aucun secteur',
+  no_sectors_text: 'Ajoutez vos zones de prédication pour classer vos convertis.',
+  no_sectors_cta: 'Ajouter un secteur',
+
+  // Import de contacts
+  import_title: 'Importer des contacts',
+  import_cta: 'Importer depuis mes contacts',
+  import_sub: 'Choisissez les personnes à suivre. Leur numéro sera repris.',
+  import_search: 'Rechercher un contact',
+  import_permission: "Accès aux contacts refusé. Autorisez-le dans les réglages du téléphone.",
+  import_empty: 'Aucun contact avec un numéro de téléphone.',
+  import_selected: 'sélectionné(s)',
+  import_action: 'Importer',
+  import_done: 'converti(s) importé(s)',
+  import_none: 'Sélectionnez au moins un contact.',
+  import_consent_note: 'Ces contacts seront enregistrés sans consentement : pensez à les informer.',
+
+  // Planification par calendrier
+  plan_title: 'Planifier une visite',
+  plan_pick: 'Choisir une date',
+  plan_confirm: 'Planifier à cette date',
+  plan_none: 'Sans visite',
+  cal_today: "Aujourd'hui",
+  add_firstvisit: 'Première visite',
+  add_firstvisit_none: "Pas de visite pour l'instant",
+  add_firstvisit_pick: 'Planifier une première visite',
+  add_sector_none: 'Aucun secteur',
 };
 
 export type Dict = typeof fr;
@@ -403,6 +442,45 @@ const en: Dict = {
   login_offline: 'Server unreachable — check your connection',
   register_email_needed: 'An e-mail address is required to create an account',
   register_weak_password: 'The password must be at least 8 characters long',
+  // Sector onboarding
+  setup_title: 'Your preaching areas',
+  setup_sub: 'Add the areas where you often evangelize. They will be ready when you record a convert.',
+  setup_add: 'Add this area',
+  setup_name_ph: 'Area name (Akwa, Bonabéri…)',
+  setup_city_ph: 'City (optional)',
+  setup_added: 'Areas added',
+  setup_finish: 'Finish',
+  setup_skip: 'Later',
+  setup_empty_hint: 'You can always add some from “Sectors”.',
+
+  // No-sector signal
+  no_sectors_title: 'No sector',
+  no_sectors_text: 'Add your preaching areas to organize your converts.',
+  no_sectors_cta: 'Add a sector',
+
+  // Contact import
+  import_title: 'Import contacts',
+  import_cta: 'Import from my contacts',
+  import_sub: 'Pick the people to follow up. Their number will be reused.',
+  import_search: 'Search a contact',
+  import_permission: 'Contacts access denied. Allow it in the phone settings.',
+  import_empty: 'No contact with a phone number.',
+  import_selected: 'selected',
+  import_action: 'Import',
+  import_done: 'convert(s) imported',
+  import_none: 'Select at least one contact.',
+  import_consent_note: 'These contacts will be saved without consent: remember to inform them.',
+
+  // Calendar planning
+  plan_title: 'Schedule a visit',
+  plan_pick: 'Pick a date',
+  plan_confirm: 'Schedule on this date',
+  plan_none: 'No visit',
+  cal_today: 'Today',
+  add_firstvisit: 'First visit',
+  add_firstvisit_none: 'No visit for now',
+  add_firstvisit_pick: 'Schedule a first visit',
+  add_sector_none: 'No sector',
 };
 
 export const DICT: Record<Lang, Dict> = { fr, en };

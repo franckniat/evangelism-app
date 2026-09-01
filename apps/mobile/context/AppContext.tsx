@@ -34,7 +34,6 @@ import {
 import { DICT, type Dict, type Lang } from '@/constants/i18n';
 import type { StatusKey } from '@/constants/status';
 import { ApiError, OfflineError, api, hasSession, restoreSession } from '@/lib/api';
-import { isoFromOffset } from '@/lib/dates';
 import { aDesDonneesLocales, reprendreDonneesLocales } from '@/lib/migration';
 import { cancelReminder, scheduleVisitReminder } from '@/lib/notifications';
 import {
@@ -76,6 +75,13 @@ type AppState = PersistedState & {
   offline: boolean;
   /** Vrai quand le serveur a refusé une modification déjà appliquée ici. */
   rejected: boolean;
+  /**
+   * Vrai juste après une inscription : on propose alors de saisir ses
+   * secteurs de prédication avant d'entrer dans l'application. Transitoire —
+   * une connexion existante n'y passe pas, et l'état ne survit pas au
+   * redémarrage (le bandeau « aucun secteur » prend le relais).
+   */
+  needsSectorSetup: boolean;
 };
 
 const initialState: AppState = {
@@ -92,12 +98,14 @@ const initialState: AppState = {
   pending: 0,
   offline: false,
   rejected: false,
+  needsSectorSetup: false,
 };
 
 type Action =
   | { type: 'HYDRATE'; payload: PersistedState; pending: number }
   | { type: 'SET_INTRO_SEEN' }
-  | { type: 'SIGNED_IN'; user: UserDto }
+  | { type: 'SIGNED_IN'; user: UserDto; needsSectorSetup: boolean }
+  | { type: 'SECTOR_SETUP_DONE' }
   | { type: 'SIGNED_OUT' }
   | { type: 'SET_USER'; user: UserDto }
   | { type: 'SET_PHOTO'; photoUri: string | null }
@@ -121,7 +129,9 @@ function reducer(state: AppState, action: Action): AppState {
     case 'SET_INTRO_SEEN':
       return { ...state, introSeen: true };
     case 'SIGNED_IN':
-      return { ...state, user: action.user };
+      return { ...state, user: action.user, needsSectorSetup: action.needsSectorSetup };
+    case 'SECTOR_SETUP_DONE':
+      return { ...state, needsSectorSetup: false };
     case 'SIGNED_OUT':
       return {
         ...state,
@@ -198,7 +208,8 @@ export type ConvertFields = {
   prenom: string;
   nom: string;
   tel: string;
-  sexe: Sexe;
+  /** Peut rester inconnu : un contact importé n'a pas de sexe renseigné. */
+  sexe: Sexe | null;
   secteur: string;
   statut: StatusKey;
   notes: string;
@@ -225,6 +236,8 @@ type AppContextValue = {
   t: Dict;
   currentUser: Evangelist | null;
   isAuthenticated: boolean;
+  /** Vrai juste après une inscription : la saisie des secteurs est proposée. */
+  needsSectorSetup: boolean;
   converts: Convert[];
   sectors: Sector[];
   notifications: AppState['notifications'];
@@ -238,6 +251,7 @@ type AppContextValue = {
   loadConvertHistory: (id: string) => Promise<void>;
   // onboarding
   markIntroSeen: () => void;
+  finishSectorSetup: () => void;
   // authentification
   login: (email: string, password: string) => Promise<AuthResult>;
   register: (input: RegisterInput) => Promise<AuthResult>;
@@ -249,11 +263,15 @@ type AppContextValue = {
   setAppLock: (value: boolean) => void;
   setThemePref: (pref: ThemePref) => void;
   // convertis
-  addConvert: (input: ConvertFields) => string;
+  addConvert: (
+    input: ConvertFields,
+    options?: { firstVisit?: string | null; consented?: boolean }
+  ) => string;
+  importConverts: (entrees: { prenom: string; nom: string; tel: string }[]) => number;
   updateConvert: (id: string, input: ConvertFields) => void;
   deleteConvert: (id: string) => void;
   setStatus: (id: string, statut: StatusKey) => void;
-  planVisit: (id: string) => Promise<void>;
+  planVisit: (id: string, dateISO: string) => Promise<void>;
   toggleTask: (id: string) => void;
   // secteurs
   addSector: (name: string, ville: string, pays: string) => void;
@@ -272,9 +290,6 @@ export function useApp(): AppContextValue {
   if (!ctx) throw new Error('useApp must be used within AppProvider');
   return ctx;
 }
-
-/** Délai par défaut avant la prochaine visite, en jours. */
-const DELAI_VISITE = 3;
 
 const uuid = () => Crypto.randomUUID();
 
@@ -533,12 +548,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
    * ---------------------------------------------------------------- */
 
   const markIntroSeen = useCallback(() => dispatch({ type: 'SET_INTRO_SEEN' }), [dispatch]);
+  const finishSectorSetup = useCallback(() => dispatch({ type: 'SECTOR_SETUP_DONE' }), [dispatch]);
 
   const login = useCallback(
     async (email: string, password: string): Promise<AuthResult> => {
       try {
         const auth = await api.login(email.trim().toLowerCase(), password);
-        dispatch({ type: 'SIGNED_IN', user: auth.user });
+        // Un compte existant ne repasse pas par la saisie des secteurs.
+        dispatch({ type: 'SIGNED_IN', user: auth.user, needsSectorSetup: false });
         return { ok: true };
       } catch (error) {
         if (error instanceof OfflineError) return { ok: false, error: 'offline' };
@@ -559,7 +576,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         church: input.church.trim() || null,
       });
 
-      dispatch({ type: 'SIGNED_IN', user: auth.user });
+      // Nouveau compte : on propose la saisie des secteurs avant l'accueil.
+      dispatch({ type: 'SIGNED_IN', user: auth.user, needsSectorSetup: true });
       dispatch({ type: 'SET_PHOTO', photoUri: input.photoUri ?? null });
       return { ok: true };
     } catch (error) {
@@ -649,11 +667,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   const addConvert = useCallback(
-    (input: ConvertFields) => {
+    (input: ConvertFields, options?: { firstVisit?: string | null; consented?: boolean }) => {
       const id = uuid();
-      const visitId = uuid();
-      const nextVisit = isoFromOffset(DELAI_VISITE);
-      const scheduledAt = new Date(`${nextVisit}T10:00:00`).toISOString();
+
+      /**
+       * Plus de première visite imposée : elle n'existe que si une date a
+       * été choisie au calendrier. Un dossier peut donc naître sans échéance
+       * — le bandeau « sans visite » de l'accueil s'en charge.
+       */
+      const firstVisit = options?.firstVisit ?? null;
+      const nextVisit = firstVisit;
 
       const convert: Convert = {
         id,
@@ -672,25 +695,61 @@ export function AppProvider({ children }: { children: ReactNode }) {
       };
 
       dispatch({ type: 'ADD_CONVERT', convert });
-      dispatch({ type: 'SET_PLANNED_VISIT', convertId: id, visit: { visitId, scheduledAt } });
 
       /**
        * Le consentement est transmis à la création et à elle seule : c'est
-       * là qu'il a été recueilli, sur le terrain, en informant la personne
-       * que ses coordonnées sont conservées pour la recontacter.
+       * là qu'il a été recueilli, sur le terrain, en informant la personne.
+       * Les contacts importés du téléphone, eux, arrivent sans consentement.
        */
       push({
         id: uuid(),
         kind: 'convert.create',
         convertId: id,
-        body: { ...payloadFromConvert(convert, sectorIds()), consented: true },
+        body: { ...payloadFromConvert(convert, sectorIds()), consented: options?.consented ?? true },
       });
 
-      push({ id: uuid(), kind: 'visit.create', visitId, convertId: id, scheduledAt });
+      if (firstVisit) {
+        const visitId = uuid();
+        const scheduledAt = new Date(`${firstVisit}T10:00:00`).toISOString();
+        dispatch({ type: 'SET_PLANNED_VISIT', convertId: id, visit: { visitId, scheduledAt } });
+        push({ id: uuid(), kind: 'visit.create', visitId, convertId: id, scheduledAt });
+      }
 
       return id;
     },
     [dispatch, push, sectorIds, t]
+  );
+
+  /**
+   * Import en bloc depuis le répertoire du téléphone.
+   *
+   * Sans consentement — ces personnes n'ont pas été informées en face à
+   * face — et sans visite : le bandeau de la fiche signalera le
+   * consentement manquant, et l'utilisateur planifiera au calendrier quand
+   * il le décidera.
+   */
+  const importConverts = useCallback(
+    (entrees: { prenom: string; nom: string; tel: string }[]) => {
+      let n = 0;
+      for (const e of entrees) {
+        if (!e.prenom.trim() || !e.tel.trim()) continue;
+        addConvert(
+          {
+            prenom: e.prenom,
+            nom: e.nom,
+            tel: e.tel,
+            sexe: null,
+            secteur: '',
+            statut: 'reflexion',
+            notes: '',
+          },
+          { consented: false },
+        );
+        n += 1;
+      }
+      return n;
+    },
+    [addConvert]
   );
 
   const updateConvert = useCallback(
@@ -748,19 +807,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [dispatch, push]
   );
 
+  /**
+   * Planifie une visite à la date choisie au calendrier — plus d'échéance
+   * imposée à trois jours. Une visite déjà en cours est reportée.
+   */
   const planVisit = useCallback(
-    async (id: string) => {
+    async (id: string, dateISO: string) => {
       const c = latest.current.converts.find((x) => x.id === id);
       if (!c) return;
 
       await cancelReminder(c.reminderId);
 
-      // Une visite déjà planifiée est reportée, pas effacée.
       const encours = latest.current.plannedVisits[id];
       if (encours) push({ id: uuid(), kind: 'visit.postpone', visitId: encours.visitId });
 
       const visitId = uuid();
-      const nextVisit = isoFromOffset(DELAI_VISITE);
+      const nextVisit = dateISO;
       const scheduledAt = new Date(`${nextVisit}T10:00:00`).toISOString();
       const history = [{ date: t.due_today, text: t.hist_planned }, ...c.history];
 
@@ -781,9 +843,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   /**
-   * Cocher la case, c'est clore la visite planifiée — pas basculer un
-   * drapeau. La décocher replanifie, ce qui est la seule lecture honnête :
-   * on ne « dé-visite » pas quelqu'un.
+   * Cocher la case clôt la visite planifiée. La décocher rouvre simplement
+   * le suivi, sans imposer de nouvelle date : c'est au calendrier, quand
+   * l'utilisateur le décide, qu'une prochaine visite se fixe.
    */
   const toggleTask = useCallback(
     (id: string) => {
@@ -791,7 +853,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (!c) return;
 
       if (c.done) {
-        void planVisit(id);
+        dispatch({ type: 'UPDATE_CONVERT', id, patch: { done: false } });
         return;
       }
 
@@ -812,7 +874,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       if (encours) push({ id: uuid(), kind: 'visit.complete', visitId: encours.visitId });
     },
-    [dispatch, planVisit, push, t]
+    [dispatch, push, t]
   );
 
   /**
@@ -964,6 +1026,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     t,
     currentUser,
     isAuthenticated: state.user != null,
+    needsSectorSetup: state.needsSectorSetup,
     converts: state.converts,
     sectors: state.sectors,
     notifications: state.notifications,
@@ -975,6 +1038,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     syncNow,
     loadConvertHistory,
     markIntroSeen,
+    finishSectorSetup,
     login,
     register,
     logout,
@@ -984,6 +1048,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setAppLock,
     setThemePref,
     addConvert,
+    importConverts,
     updateConvert,
     deleteConvert,
     setStatus,

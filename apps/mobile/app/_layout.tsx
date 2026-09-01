@@ -37,7 +37,7 @@ if (Platform.OS !== 'web') {
 }
 
 function RootNavigator() {
-  const { hydrated, isAuthenticated, introSeen } = useApp();
+  const { hydrated, isAuthenticated, introSeen, needsSectorSetup } = useApp();
   const colors = useColors();
   const segments = useSegments();
   const router = useRouter();
@@ -46,12 +46,16 @@ function RootNavigator() {
     if (!hydrated) return;
     const first = segments[0] as string | undefined;
     const inAuthFlow = first === 'login' || first === 'register' || first === 'onboarding';
+
     if (!isAuthenticated && !inAuthFlow) {
       router.replace(introSeen ? '/login' : '/onboarding');
-    } else if (isAuthenticated && inAuthFlow) {
+    } else if (isAuthenticated && needsSectorSetup && first !== 'setup-sectors') {
+      // Nouveau compte : la saisie des secteurs passe avant l'accueil.
+      router.replace('/setup-sectors');
+    } else if (isAuthenticated && !needsSectorSetup && (inAuthFlow || first === 'setup-sectors')) {
       router.replace('/');
     }
-  }, [hydrated, isAuthenticated, introSeen, segments, router]);
+  }, [hydrated, isAuthenticated, introSeen, needsSectorSetup, segments, router]);
 
   if (!hydrated) return null;
 
@@ -63,9 +67,11 @@ function RootNavigator() {
       }}>
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="onboarding" />
+      <Stack.Screen name="setup-sectors" />
       <Stack.Screen name="login" />
       <Stack.Screen name="register" />
       <Stack.Screen name="add" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="import-contacts" options={{ presentation: 'modal' }} />
       <Stack.Screen name="convert/[id]" />
       <Stack.Screen name="notifications" />
       <Stack.Screen name="sectors" />

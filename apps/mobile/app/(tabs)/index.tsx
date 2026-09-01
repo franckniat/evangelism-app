@@ -17,7 +17,8 @@ import { useColors } from '@/context/ThemeContext';
 import { decorateConvert } from '@/lib/view';
 
 export default function HomeScreen() {
-  const { t, lang, converts, sectors, currentUser, unreadCount, toggleTask, syncNow } = useApp();
+  const { t, lang, converts, sectors, currentUser, unreadCount, toggleTask, syncNow, needsSectorSetup } =
+    useApp();
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
   const router = useRouter();
@@ -94,6 +95,17 @@ export default function HomeScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={c.accent} />
         }>
         <SyncBanner />
+
+        {!needsSectorSetup && sectors.length === 0 && (
+          <Pressable style={styles.noSectors} onPress={() => router.push('/sectors')}>
+            <Feather name="map-pin" size={18} color={c.accent} />
+            <View style={styles.flex}>
+              <Text style={styles.noSectorsTitle}>{t.no_sectors_title}</Text>
+              <Text style={styles.noSectorsText}>{t.no_sectors_text}</Text>
+            </View>
+            <Feather name="chevron-right" size={18} color={c.mutedText} />
+          </Pressable>
+        )}
 
         <View style={styles.statsGrid}>
           <View style={styles.statsRow}>
@@ -178,6 +190,20 @@ const makeStyles = (c: AppColors) =>
     },
     title: { fontFamily: fonts.heading, fontSize: 23, color: c.text, marginTop: 2 },
     scroll: { paddingBottom: 24 },
+    noSectors: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      marginHorizontal: 20,
+      marginTop: 4,
+      padding: 14,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: c.accent,
+      backgroundColor: c.accentSoft,
+    },
+    noSectorsTitle: { fontFamily: fonts.heading, fontSize: 14, color: c.accentStrong },
+    noSectorsText: { fontFamily: fonts.regular, fontSize: 12, color: c.accentStrong, marginTop: 2 },
     statsGrid: { paddingHorizontal: 20, paddingTop: 16, gap: 10 },
     statsRow: { flexDirection: 'row', gap: 10 },
     sectionRow: {
