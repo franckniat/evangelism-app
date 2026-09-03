@@ -77,7 +77,11 @@ const makeStyles = (c: AppColors) =>
   StyleSheet.create({
     root: { flex: 1 },
     overlay: {
-      ...StyleSheet.absoluteFillObject,
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
       backgroundColor: c.bg,
       alignItems: 'center',
       justifyContent: 'center',

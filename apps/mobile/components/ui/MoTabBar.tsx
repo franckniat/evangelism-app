@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Feather } from '@expo/vector-icons';
-import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+// SDK 56+ : le type vient d'expo-router, plus de @react-navigation directement.
+import type { BottomTabBarProps } from 'expo-router/js-tabs';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
