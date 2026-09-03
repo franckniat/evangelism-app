@@ -143,11 +143,18 @@ export default function PageConfidentialite() {
 
       <Section titre="Nous écrire">
         <p>
-          Responsable du traitement : <strong>[à compléter — nom et adresse de
-          l&apos;association ou de la personne qui exploite le service]</strong>.
+          Responsable du traitement : <strong>Franck Niat</strong>, Douala,
+          Cameroun.
         </p>
         <p>
-          Contact : <strong>[à compléter — adresse e-mail de contact]</strong>.
+          Contact :{" "}
+          <a
+            href="mailto:franckniato7@gmail.com"
+            className="text-primary hover:underline"
+          >
+            franckniato7@gmail.com
+          </a>
+          .
         </p>
       </Section>
 

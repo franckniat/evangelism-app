@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
  * deux pages.
  */
 
-export const DERNIERE_MISE_A_JOUR = "30 août 2026";
+export const DERNIERE_MISE_A_JOUR = "3 septembre 2026";
 
 export function Article({
   titre,

@@ -123,15 +123,17 @@ export default function PageConditions() {
 
       <Section titre="Nous écrire">
         <p>
-          Éditeur du service :{" "}
-          <strong>
-            [à compléter — nom et adresse de l&apos;association ou de la personne
-            qui exploite le service]
-          </strong>
-          .
+          Éditeur du service : <strong>Franck Niat</strong>, Douala, Cameroun.
         </p>
         <p>
-          Contact : <strong>[à compléter — adresse e-mail de contact]</strong>.
+          Contact :{" "}
+          <a
+            href="mailto:franckniato7@gmail.com"
+            className="text-primary hover:underline"
+          >
+            franckniato7@gmail.com
+          </a>
+          .
         </p>
         <p>
           Le traitement des données est décrit dans la{" "}
