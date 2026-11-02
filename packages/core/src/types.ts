@@ -22,6 +22,11 @@ export type Convert = {
   history: HistoryEntry[];
   /** Identifiant de la notification locale planifiée (pour annulation). */
   reminderId?: string | null;
+  /**
+   * Horodatage local de dernière modification (ISO). Posé pour la future
+   * synchro local-first ; ignoré par le mode connecté.
+   */
+  updatedAt?: string;
 };
 
 export type Sector = {
@@ -29,6 +34,11 @@ export type Sector = {
   name: string;
   ville: string;
   pays: string;
+  /**
+   * Horodatage local de dernière modification (ISO). Posé pour la future
+   * synchro local-first ; ignoré par le mode connecté.
+   */
+  updatedAt?: string;
 };
 
 export type NotifIcon = 'bell' | 'alert' | 'check' | 'userplus';
@@ -58,6 +68,11 @@ export type Evangelist = {
   church: string;
   /** Photo choisie sur cet appareil. Locale : elle ne quitte pas le téléphone. */
   photoUri?: string | null;
+  /**
+   * Horodatage local de dernière modification (ISO). Posé pour la future
+   * synchro local-first ; ignoré par le mode connecté.
+   */
+  updatedAt?: string;
 };
 
 export type ThemePref = 'system' | 'light' | 'dark';
