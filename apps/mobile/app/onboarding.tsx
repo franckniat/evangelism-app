@@ -1,5 +1,4 @@
 import { Feather } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import { useMemo, useRef, useState } from 'react';
 import {
   Pressable,
@@ -24,7 +23,6 @@ export default function OnboardingScreen() {
   const { t, markIntroSeen } = useApp();
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
-  const router = useRouter();
   const { width } = useWindowDimensions();
   const scrollRef = useRef<ScrollView>(null);
   const [page, setPage] = useState(0);
@@ -40,16 +38,8 @@ export default function OnboardingScreen() {
     if (p !== page) setPage(p);
   };
 
-  const goRegister = () => {
-    markIntroSeen();
-    router.replace('/register');
-  };
-  const goLogin = () => {
-    markIntroSeen();
-    router.replace('/login');
-  };
   const next = () => {
-    if (last) goRegister();
+    if (last) markIntroSeen();
     else scrollRef.current?.scrollTo({ x: width * (page + 1), animated: true });
   };
 
@@ -62,7 +52,7 @@ export default function OnboardingScreen() {
           </View>
           <Text style={styles.brand}>HARVEST</Text>
         </View>
-        <Pressable onPress={goLogin} hitSlop={8}>
+        <Pressable onPress={markIntroSeen} hitSlop={8}>
           <Text style={styles.skip}>{t.onb_skip}</Text>
         </Pressable>
       </View>

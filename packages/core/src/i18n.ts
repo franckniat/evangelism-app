@@ -221,6 +221,9 @@ const fr = {
   setup_finish: 'Terminer',
   setup_skip: 'Plus tard',
   setup_empty_hint: 'Vous pourrez toujours en ajouter depuis « Secteurs ».',
+  setup_profile_title: 'Bienvenue sur Harvest',
+  setup_profile_sub: 'Votre nom et votre église — pour personnaliser votre suivi. Tout reste sur ce téléphone.',
+  setup_profile_submit: 'Continuer',
 
   // Signal « aucun secteur »
   no_sectors_title: 'Aucun secteur',
@@ -452,6 +455,9 @@ const en: Dict = {
   setup_finish: 'Finish',
   setup_skip: 'Later',
   setup_empty_hint: 'You can always add some from “Sectors”.',
+  setup_profile_title: 'Welcome to Harvest',
+  setup_profile_sub: 'Your name and church — to personalize your follow-up. Everything stays on this phone.',
+  setup_profile_submit: 'Continue',
 
   // No-sector signal
   no_sectors_title: 'No sector',

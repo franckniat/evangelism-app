@@ -1,7 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -17,23 +16,26 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
 import { Input } from '@/components/ui/Input';
-import { StackHeader } from '@/components/ui/StackHeader';
 import { fonts, radius, type AppColors } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/context/ThemeContext';
 
-export default function RegisterScreen() {
-  const { t, register } = useApp();
+/**
+ * Création du profil local, au premier lancement.
+ *
+ * Pas de compte, pas de mot de passe : l'application est entièrement locale.
+ * On demande seulement le nom et l'église, pour personnaliser l'affichage —
+ * tout reste sur cet appareil. Une fois le profil créé, le routage enchaîne
+ * sur la saisie des secteurs.
+ */
+export default function SetupProfileScreen() {
+  const { t, createProfile } = useApp();
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
-  const router = useRouter();
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [church, setChurch] = useState('');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
   const pickPhoto = async () => {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -47,43 +49,29 @@ export default function RegisterScreen() {
     if (!res.canceled && res.assets[0]) setPhotoUri(res.assets[0].uri);
   };
 
-  const onSubmit = async () => {
+  const onSubmit = () => {
     setError(null);
-    if (!name.trim() || !email.trim() || !password.trim() || !church.trim()) {
+    if (!name.trim() || !church.trim()) {
       setError(t.register_incomplete);
       return;
     }
-    if (password.length < 8) {
-      setError(t.register_weak_password);
-      return;
-    }
-
-    setLoading(true);
-    const res = await register({ name, church, password, photoUri, email });
-    setLoading(false);
-
-    if (!res.ok) {
-      /**
-       * Dire lequel des trois échecs s'est produit : « une erreur est
-       * survenue » laisse l'utilisateur réessayer la même chose sans savoir
-       * quoi changer.
-       */
-      setError(
-        res.error === 'offline'
-          ? t.login_offline
-          : res.error === 'taken'
-            ? t.register_error
-            : t.register_incomplete
-      );
-    }
+    // Le routage prend le relais : profil créé → saisie des secteurs.
+    createProfile({ name, church, photoUri });
   };
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-      <StackHeader title={t.register_title} onBack={() => router.replace('/login')} backIcon="chevron-left" />
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-          <Text style={styles.sub}>{t.register_sub}</Text>
+          <View style={styles.brandRow}>
+            <View style={styles.brandIcon}>
+              <Feather name="plus" size={18} color={c.onAccent} />
+            </View>
+            <Text style={styles.brand}>HARVEST</Text>
+          </View>
+
+          <Text style={styles.title}>{t.setup_profile_title}</Text>
+          <Text style={styles.sub}>{t.setup_profile_sub}</Text>
 
           <View style={styles.photoRow}>
             <Pressable style={styles.photo} onPress={pickPhoto}>
@@ -104,20 +92,6 @@ export default function RegisterScreen() {
             <Input value={name} onChangeText={setName} placeholder="Jean Kamga" />
           </Field>
 
-          <Field label={t.register_email} style={styles.field}>
-            <Input
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              placeholder="jean@exemple.cm"
-            />
-          </Field>
-
-          <Field label={t.login_pass} style={styles.field}>
-            <Input value={password} onChangeText={setPassword} secureTextEntry />
-          </Field>
-
           <Field label={t.register_church} style={styles.field}>
             <Input value={church} onChangeText={setChurch} placeholder="Église du Plein Évangile" />
           </Field>
@@ -125,20 +99,13 @@ export default function RegisterScreen() {
           {error && <Text style={styles.error}>{error}</Text>}
 
           <Button
-            title={t.register_submit}
-            icon="check"
+            title={t.setup_profile_submit}
+            iconRight="chevron-right"
             block
-            height={46}
-            loading={loading}
+            height={48}
             onPress={onSubmit}
             style={styles.submit}
           />
-
-          <Pressable style={styles.footer} onPress={() => router.replace('/login')}>
-            <Text style={styles.footerText}>
-              {t.register_haveaccount} <Text style={styles.footerLink}>{t.register_signin}</Text>
-            </Text>
-          </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -149,8 +116,19 @@ const makeStyles = (c: AppColors) =>
   StyleSheet.create({
     safe: { flex: 1, backgroundColor: c.bg },
     flex: { flex: 1 },
-    container: { paddingHorizontal: 20, paddingTop: 18, paddingBottom: 28 },
-    sub: { fontFamily: fonts.regular, fontSize: 13, color: c.mutedText, marginBottom: 20 },
+    container: { paddingHorizontal: 24, paddingTop: 24, paddingBottom: 28 },
+    brandRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 28 },
+    brandIcon: {
+      width: 34,
+      height: 34,
+      borderRadius: radius.md,
+      backgroundColor: c.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    brand: { fontFamily: fonts.heading, fontSize: 18, letterSpacing: -0.3, color: c.text },
+    title: { fontFamily: fonts.heading, fontSize: 24, color: c.text, marginBottom: 8 },
+    sub: { fontFamily: fonts.regular, fontSize: 14, color: c.mutedText, lineHeight: 21, marginBottom: 24 },
     photoRow: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 20 },
     photo: {
       width: 72,
@@ -168,7 +146,4 @@ const makeStyles = (c: AppColors) =>
     field: { marginBottom: 14 },
     error: { fontFamily: fonts.regular, fontSize: 13, color: c.danger, marginBottom: 4 },
     submit: { marginTop: 8 },
-    footer: { marginTop: 20, alignItems: 'center' },
-    footerText: { fontFamily: fonts.regular, fontSize: 12, color: c.mutedText },
-    footerLink: { fontFamily: fonts.heading, color: c.accent },
   });

@@ -23,6 +23,11 @@ export type Convert = {
   /** Identifiant de la notification locale planifiée (pour annulation). */
   reminderId?: string | null;
   /**
+   * Quand la personne a été informée et a accepté d'être suivie. `null` : pas
+   * de consentement recueilli (contact importé du téléphone).
+   */
+  consentedAt?: string | null;
+  /**
    * Horodatage local de dernière modification (ISO). Posé pour la future
    * synchro local-first ; ignoré par le mode connecté.
    */

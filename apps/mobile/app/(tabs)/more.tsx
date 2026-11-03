@@ -13,7 +13,7 @@ import { initials } from '@/lib/view';
 type FeatherName = React.ComponentProps<typeof Feather>['name'];
 
 export default function MoreScreen() {
-  const { t, currentUser, logout } = useApp();
+  const { t, currentUser } = useApp();
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
   const router = useRouter();
@@ -38,7 +38,6 @@ export default function MoreScreen() {
           <Avatar initials={ini} uri={currentUser?.photoUri} size={52} bg={c.accent} fontSize={19} />
           <View style={styles.flex}>
             <Text style={styles.name}>{currentUser?.name}</Text>
-            <Text style={styles.email}>{currentUser?.email ?? currentUser?.phone}</Text>
             {!!currentUser?.church && <Text style={styles.church}>{currentUser.church}</Text>}
           </View>
           <Feather name="chevron-right" size={18} color={c.iconMuted} />
@@ -57,10 +56,6 @@ export default function MoreScreen() {
           ))}
         </View>
 
-        <Pressable style={styles.logoutBtn} onPress={logout}>
-          <Feather name="log-out" size={18} color={c.accent} />
-          <Text style={styles.logoutText}>{t.more_logout}</Text>
-        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -90,7 +85,6 @@ const makeStyles = (c: AppColors) =>
       padding: 16,
     },
     name: { fontFamily: fonts.heading, fontSize: 17, color: c.text },
-    email: { fontFamily: fonts.regular, fontSize: 12, color: c.mutedText },
     church: { fontFamily: fonts.regular, fontSize: 12, color: c.accentStrong, marginTop: 3 },
     menu: {
       marginTop: 16,
@@ -104,16 +98,4 @@ const makeStyles = (c: AppColors) =>
     itemBorder: { borderTopWidth: 1, borderTopColor: c.divider },
     pressed: { backgroundColor: c.pressed },
     itemLabel: { flex: 1, fontFamily: fonts.semibold, fontSize: 14, color: c.text },
-    logoutBtn: {
-      marginTop: 16,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: 10,
-      borderWidth: 1,
-      borderColor: c.divider,
-      borderRadius: radius.lg,
-      paddingVertical: 13,
-    },
-    logoutText: { fontFamily: fonts.heading, fontSize: 14, color: c.accent },
   });

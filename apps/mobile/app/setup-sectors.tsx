@@ -19,7 +19,7 @@ import { useApp } from '@/context/AppContext';
 import { useColors } from '@/context/ThemeContext';
 
 /**
- * Juste après l'inscription : on demande les secteurs où l'on prêche
+ * Juste après la création du profil : on demande les secteurs où l'on prêche
  * souvent. Ils seront ainsi déjà en place au moment d'enregistrer un
  * converti, au lieu d'obliger à s'interrompre pour les créer.
  *

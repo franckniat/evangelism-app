@@ -92,8 +92,8 @@ export default function SettingsScreen() {
         <Text style={styles.h6}>{t.settings_account}</Text>
         <View style={styles.infoCard}>
           <View style={[styles.infoRow, styles.infoRowBorder]}>
-            <Text style={styles.infoLabel}>{currentUser?.email ? t.profile_email : t.profile_phone}</Text>
-            <Text style={styles.infoValue}>{currentUser?.email ?? currentUser?.phone}</Text>
+            <Text style={styles.infoLabel}>{t.register_name}</Text>
+            <Text style={styles.infoValue}>{currentUser?.name}</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>{t.profile_church}</Text>

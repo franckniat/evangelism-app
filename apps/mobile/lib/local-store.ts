@@ -20,7 +20,7 @@ import type { Lang } from '@/constants/i18n';
 /**
  * Une clé par collection. On conserve le préfixe `harvest:` des versions
  * précédentes ; `profil` remplace l'ancien `user` (qui portait un profil
- * serseur), et il n'y a plus ni `plannedVisits` ni `photoUri` séparés : la
+ * serveur), et il n'y a plus ni `plannedVisits` ni `photoUri` séparés : la
  * prochaine visite vit sur le converti, et la photo sur le profil.
  */
 export const KEYS = {
