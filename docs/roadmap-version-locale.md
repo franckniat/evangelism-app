@@ -67,7 +67,7 @@ et des identifiants déjà prêts pour la synchro.
 ### Étape 0 — Décisions ✅
 Faite (tableau ci-dessus).
 
-### Étape 1 — Le repository local
+### Étape 1 — Le repository local ✅ (#37)
 **But :** un module unique qui lit/écrit tout le domaine en local.
 - Créer `lib/local-store.ts` : charge/persiste `profil`, `secteurs`,
   `convertis` (avec `history` + `nextVisit`), `notifications`, `réglages`,
@@ -80,7 +80,10 @@ Faite (tableau ci-dessus).
 **Validation :** `bun run --filter @harvest/mobile typecheck` vert ; un petit
 test manuel d'écriture/lecture.
 
-### Étape 2 — Brancher `AppContext` sur le repository
+### Étape 2 — Brancher `AppContext` sur le repository (#38)
+> Code livré et éprouvé sur Expo Web. **Reste à valider sur téléphone** : import
+> de contacts et rappels n'existent pas sur le web.
+
 **But :** l'app lit et écrit en local, instantanément, sans réseau.
 - Réécrire `context/AppContext.tsx` : chaque action modifie l'état **et**
   persiste via le repository. On retire `outbox`, `api`, `session`, `sync`,
@@ -94,11 +97,16 @@ test manuel d'écriture/lecture.
 **Validation :** typecheck + lint verts ; l'app démarre, CRUD convertis +
 secteurs + calendrier + import contacts fonctionnent hors-ligne.
 
-### Étape 3 — Retirer l'authentification serveur
+### Étape 3 — Retirer l'authentification serveur (#39)
+> Code livré et éprouvé sur Expo Web. **Reste à valider sur téléphone** : le
+> verrou biométrique n'existe pas sur le web.
+
 **But :** pas de login ; premier lancement → onboarding → app.
 - `app/_layout.tsx` : retirer la redirection vers `login`. Logique : pas de
-  profil local → `onboarding` → `setup-sectors` → accueil. Garder `LockGate`.
-- Retirer `app/login.tsx`, `app/register.tsx` du flux (et les supprimer).
+  profil local → `onboarding` → `setup-profile` → `setup-sectors` → accueil.
+  Garder `LockGate`.
+- Supprimer `app/login.tsx` et `app/register.tsx` ; `app/setup-profile.tsx`
+  remplace ce dernier.
 - Le **profil** (nom, église, photo) est saisi à l'onboarding et stocké en
   local ; `app/profile.tsx` l'édite en local.
 - `lib/auth.ts` (hash mot de passe) n'a plus lieu d'être → supprimer.
@@ -106,7 +114,7 @@ secteurs + calendrier + import contacts fonctionnent hors-ligne.
 **Validation :** premier lancement sur un appareil neuf = onboarding, aucun
 écran de connexion ; le verrou biométrique fonctionne toujours.
 
-### Étape 4 — Export / import des données
+### Étape 4 — Export / import des données (#40)
 **But :** le filet de sécurité (téléphone perdu = tout perdu sinon).
 - Installer `expo-file-system`, `expo-sharing`, `expo-document-picker`.
 - Dans les **Réglages** : « Exporter mes données » → sérialise tout le stock
@@ -119,7 +127,7 @@ secteurs + calendrier + import contacts fonctionnent hors-ligne.
 **Validation :** export sur l'appareil A, import sur l'appareil B → mêmes
 données, sans doublon.
 
-### Étape 5 — Nettoyage de la couche réseau
+### Étape 5 — Nettoyage de la couche réseau (#41)
 **But :** une app locale **propre**, sans code mort trompeur.
 - Retirer du chemin actif et supprimer : `lib/api.ts`, `lib/outbox.ts`,
   `lib/session.ts`, `lib/migration.ts`, `lib/config.ts`, `components/ui/SyncBanner.tsx`.
@@ -131,7 +139,7 @@ données, sans doublon.
 **Validation :** typecheck + lint verts ; `grep` ne trouve plus d'import de
 `lib/api` / `outbox` / `session` dans `apps/mobile`.
 
-### Étape 6 — Build local & APK
+### Étape 6 — Build local & APK (#42)
 **But :** un APK qui ne dépend d'**aucun** serveur.
 - Plus besoin d'`EXPO_PUBLIC_API_URL` : retirer `apps/mobile/.env` /
   l'`env` du profil EAS.
@@ -140,7 +148,7 @@ données, sans doublon.
 **Validation :** APK installé, l'app marche **en mode avion dès la première
 ouverture**, sans jamais avoir eu de réseau.
 
-### Étape 7 — Vérification sur appareil & docs
+### Étape 7 — Vérification sur appareil & docs (#43)
 **But :** prouver le tout sur un vrai téléphone, documenter.
 - Parcours complet hors-ligne : onboarding, convertis, calendrier, statuts,
   notes, import contacts, **export puis import**, verrou biométrique.
@@ -174,3 +182,13 @@ un plus qui réconcilie en arrière-plan, jamais un préalable au fonctionnement
 - Pas de chiffrement des données au repos (le verrou de l'appareil + le
   verrou biométrique protègent déjà ; à réévaluer si le besoin émerge).
 - iOS inchangé (toujours tributaire d'un compte Apple Developer, cf. #31).
+
+## Questions ouvertes
+
+- **Recueil du consentement.** La fiche garde `consentedAt` (`null` pour un
+  contact importé), mais l'écran d'ajout ne demande rien : toute saisie manuelle
+  est marquée consentie d'office, et la fiche mobile ne signale pas un
+  consentement manquant.
+- **Anciennes clés.** `harvest:user`, `harvest:photoUri`, `harvest:plannedVisits`
+  et les jetons du trousseau restent sur les téléphones déjà connectés. À purger
+  à l'étape 5, avant de retirer `expo-secure-store`.
