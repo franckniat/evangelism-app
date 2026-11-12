@@ -9,6 +9,7 @@ import {
   View,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
+  type ScrollViewInstance,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -24,7 +25,7 @@ export default function OnboardingScreen() {
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
   const { width } = useWindowDimensions();
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const [page, setPage] = useState(0);
 
   const slides: { icon: FeatherName; title: string; text: string }[] = [

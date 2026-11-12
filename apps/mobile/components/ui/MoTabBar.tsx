@@ -13,7 +13,7 @@ import { useT } from '@/hooks/useT';
 type TabName = 'index' | 'converts' | 'suivi' | 'more';
 type FeatherName = React.ComponentProps<typeof Feather>['name'];
 
-export function MoTabBar({ state, navigation }: BottomTabBarProps) {
+export function MoTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
   const t = useT();
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
@@ -32,8 +32,8 @@ export function MoTabBar({ state, navigation }: BottomTabBarProps) {
     const route = state.routes.find((r) => r.name === name);
     if (!route) return;
     const focused = activeName === name;
-    const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-    if (!focused && !event.defaultPrevented) navigation.navigate(name);
+    const event = emitter.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+    if (!focused && !event.defaultPrevented) navigateToTab(route.key);
   };
 
   const renderTab = (item: { name: TabName; label: string; icon: FeatherName }) => {

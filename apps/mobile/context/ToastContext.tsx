@@ -19,7 +19,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
   const [msg, setMsg] = useState<string | null>(null);
-  const opacity = useRef(new Animated.Value(0)).current;
+  const [opacity] = useState(() => new Animated.Value(0));
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const showToast = useCallback(

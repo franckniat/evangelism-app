@@ -1,12 +1,12 @@
 import { forwardRef, useMemo, useState } from 'react';
-import { StyleSheet, TextInput, type TextInputProps } from 'react-native';
+import { StyleSheet, TextInput, type TextInputInstance, type TextInputProps } from 'react-native';
 
 import { fonts, radius, type AppColors } from '@/constants/theme';
 import { useColors } from '@/context/ThemeContext';
 
 type Props = TextInputProps & { multiline?: boolean };
 
-export const Input = forwardRef<TextInput, Props>(function Input(
+export const Input = forwardRef<TextInputInstance, Props>(function Input(
   { style, multiline, onFocus, onBlur, ...rest },
   ref
 ) {

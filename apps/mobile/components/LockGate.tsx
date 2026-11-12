@@ -18,40 +18,45 @@ export function LockGate({ children }: { children: React.ReactNode }) {
   const lockEnabled = isAuthenticated && settings.appLock;
 
   const [unlocked, setUnlocked] = useState(false);
-  const [prompting, setPrompting] = useState(false);
+  const prompting = useRef(false);
   const appState = useRef(AppState.currentState);
 
-  const tryUnlock = useCallback(async () => {
-    if (prompting) return;
-    setPrompting(true);
-    const ok = await authenticate(t.lock_prompt);
-    setPrompting(false);
-    if (ok) setUnlocked(true);
-  }, [prompting, t.lock_prompt]);
+  /**
+   * Activer le verrou impose de se déverrouiller. Ajusté pendant le rendu, et
+   * non dans un effet : un effet laisserait les dossiers visibles le temps
+   * d'un affichage, le temps de s'exécuter.
+   */
+  const [previousLockEnabled, setPreviousLockEnabled] = useState(lockEnabled);
+  if (lockEnabled !== previousLockEnabled) {
+    setPreviousLockEnabled(lockEnabled);
+    setUnlocked(false);
+  }
+
+  const locked = hydrated && lockEnabled && !unlocked;
+
+  const tryUnlock = useCallback(() => {
+    if (prompting.current) return;
+    prompting.current = true;
+    void authenticate(t.lock_prompt).then((ok) => {
+      prompting.current = false;
+      if (ok) setUnlocked(true);
+    });
+  }, [t.lock_prompt]);
 
   useEffect(() => {
-    if (lockEnabled) setUnlocked(false);
-    else setUnlocked(true);
-  }, [lockEnabled]);
-
-  useEffect(() => {
-    if (hydrated && lockEnabled && !unlocked && !prompting) {
-      tryUnlock();
-    }
-  }, [hydrated, lockEnabled, unlocked, prompting, tryUnlock]);
+    if (locked) tryUnlock();
+  }, [locked, tryUnlock]);
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', (next: AppStateStatus) => {
       const prev = appState.current;
       appState.current = next;
-      if (prev.match(/inactive|background/) && next === 'active' && lockEnabled) {
+      if (prev?.match(/inactive|background/) && next === 'active' && lockEnabled) {
         setUnlocked(false);
       }
     });
     return () => sub.remove();
   }, [lockEnabled]);
-
-  const locked = hydrated && lockEnabled && !unlocked;
 
   return (
     <View style={styles.root}>

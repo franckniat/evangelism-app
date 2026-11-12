@@ -65,17 +65,6 @@ export default function HomeScreen() {
   const recent = views.slice(0, 3);
   const firstName = currentUser?.name.split(' ')[0] ?? '';
 
-  const SectionTitle = ({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) => (
-    <View style={styles.sectionRow}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      {action && (
-        <Pressable onPress={onAction}>
-          <Text style={styles.sectionAction}>{action}</Text>
-        </Pressable>
-      )}
-    </View>
-  );
-
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <View style={styles.header}>
@@ -118,7 +107,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <SectionTitle title={t.home_today} action={t.a_viewall} onAction={() => router.push('/suivi')} />
+        <SectionTitle styles={styles} title={t.home_today} action={t.a_viewall} onAction={() => router.push('/suivi')} />
         <View style={styles.list}>
           {todayTasks.length === 0 ? (
             <View style={styles.empty}>
@@ -142,14 +131,14 @@ export default function HomeScreen() {
           )}
         </View>
 
-        <SectionTitle title={t.home_bystatus} />
+        <SectionTitle styles={styles} title={t.home_bystatus} />
         <View style={styles.statusCard}>
           {statusCounts.map((sc) => (
             <ProgressRow key={sc.key} label={sc.label} pct={sc.pct} count={sc.count} color={sc.color} />
           ))}
         </View>
 
-        <SectionTitle title={t.home_recent} action={t.a_viewall} onAction={() => router.push('/converts')} />
+        <SectionTitle styles={styles} title={t.home_recent} action={t.a_viewall} onAction={() => router.push('/converts')} />
         <View style={styles.list}>
           {recent.map((v) => (
             <Pressable key={v.id} style={styles.convRow} onPress={() => router.push(`/convert/${v.id}`)}>
@@ -164,6 +153,29 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function SectionTitle({
+  styles,
+  title,
+  action,
+  onAction,
+}: {
+  styles: ReturnType<typeof makeStyles>;
+  title: string;
+  action?: string;
+  onAction?: () => void;
+}) {
+  return (
+    <View style={styles.sectionRow}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      {action && (
+        <Pressable onPress={onAction}>
+          <Text style={styles.sectionAction}>{action}</Text>
+        </Pressable>
+      )}
+    </View>
   );
 }
 

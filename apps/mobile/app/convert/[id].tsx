@@ -79,13 +79,6 @@ export default function ConvertDetailScreen() {
   };
   const onEdit = () => router.push({ pathname: '/add', params: { id: c.id } });
 
-  const InfoRow = ({ label, value, last }: { label: string; value: string; last?: boolean }) => (
-    <View style={[styles.infoRow, !last && styles.infoRowBorder]}>
-      <Text style={styles.infoLabel}>{label}</Text>
-      <Text style={styles.infoValue}>{value}</Text>
-    </View>
-  );
-
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <StackHeader
@@ -114,10 +107,10 @@ export default function ConvertDetailScreen() {
 
         <Text style={styles.h6}>{t.detail_info}</Text>
         <View style={styles.infoCard}>
-          <InfoRow label={t.detail_phone} value={c.tel} />
-          <InfoRow label={t.detail_sexe} value={c.sexeLabel} />
-          <InfoRow label={t.detail_sector} value={c.secteur} />
-          <InfoRow label={t.detail_added} value={c.added} last />
+          <InfoRow styles={styles} label={t.detail_phone} value={c.tel} />
+          <InfoRow styles={styles} label={t.detail_sexe} value={c.sexeLabel} />
+          <InfoRow styles={styles} label={t.detail_sector} value={c.secteur} />
+          <InfoRow styles={styles} label={t.detail_added} value={c.added} last />
         </View>
 
         <Text style={styles.h6}>{t.detail_changestatus}</Text>
@@ -163,6 +156,25 @@ export default function ConvertDetailScreen() {
         </Pressable>
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function InfoRow({
+  styles,
+  label,
+  value,
+  last,
+}: {
+  styles: ReturnType<typeof makeStyles>;
+  label: string;
+  value: string;
+  last?: boolean;
+}) {
+  return (
+    <View style={[styles.infoRow, !last && styles.infoRowBorder]}>
+      <Text style={styles.infoLabel}>{label}</Text>
+      <Text style={styles.infoValue}>{value}</Text>
+    </View>
   );
 }
 
