@@ -1,7 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useMemo } from 'react';
-import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Segmented } from '@/components/ui/Segmented';
@@ -11,11 +11,25 @@ import { fonts, radius, type AppColors } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/context/ThemeContext';
 import { useToast } from '@/context/ToastContext';
+import { construireSauvegarde } from '@/lib/backup';
+import { choisirSauvegarde, partagerSauvegarde } from '@/lib/backup-file';
 import { authenticate, canUseAppLock } from '@/lib/lock';
 import type { ThemePref } from '@/lib/types';
 
 export default function SettingsScreen() {
-  const { t, lang, setLang, settings, toggleNotif, setAppLock, setThemePref, currentUser } = useApp();
+  const {
+    t,
+    lang,
+    setLang,
+    settings,
+    toggleNotif,
+    setAppLock,
+    setThemePref,
+    currentUser,
+    converts,
+    sectors,
+    restaurerSauvegarde,
+  } = useApp();
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
   const { showToast } = useToast();
@@ -37,6 +51,48 @@ export default function SettingsScreen() {
       setAppLock(true);
       showToast(t.toast_lock_on);
     }
+  };
+
+  const onExport = async () => {
+    try {
+      const sauvegarde = construireSauvegarde({
+        profil: currentUser,
+        secteurs: sectors,
+        convertis: converts,
+      });
+      const resultat = await partagerSauvegarde(sauvegarde, t.data_export);
+      if (resultat === 'indisponible') showToast(t.data_share_unavailable);
+    } catch {
+      showToast(t.data_export_error);
+    }
+  };
+
+  const onImport = async () => {
+    const lecture = await choisirSauvegarde().catch(() => ({ ok: false, raison: 'fichier' }) as const);
+    if (!lecture) return;
+    if (!lecture.ok) {
+      showToast(lecture.raison === 'version' ? t.data_import_newer : t.data_import_invalid);
+      return;
+    }
+
+    const { sauvegarde } = lecture;
+    const message = t.data_import_confirm_msg
+      .replace('{date}', new Date(sauvegarde.exportedAt).toLocaleDateString(lang))
+      .replace('{convertis}', String(sauvegarde.convertis.length))
+      .replace('{secteurs}', String(sauvegarde.secteurs.length))
+      .replace('{actuels}', String(converts.length));
+
+    Alert.alert(t.data_import_confirm_title, message, [
+      { text: t.a_cancel, style: 'cancel' },
+      {
+        text: t.data_import_replace,
+        style: 'destructive',
+        onPress: () => {
+          restaurerSauvegarde(sauvegarde);
+          showToast(t.toast_imported);
+        },
+      },
+    ]);
   };
 
   return (
@@ -100,6 +156,30 @@ export default function SettingsScreen() {
             <Text style={styles.infoValue}>{currentUser?.church}</Text>
           </View>
         </View>
+
+        {/* Le système de fichiers d'Expo n'existe pas sur le web. */}
+        {Platform.OS !== 'web' && (
+          <>
+            <Text style={styles.h6}>{t.settings_data}</Text>
+            <View style={styles.infoCard}>
+              <Pressable
+                style={({ pressed }) => [styles.actionRow, styles.infoRowBorder, pressed && styles.pressed]}
+                onPress={onExport}>
+                <Feather name="upload" size={19} color={c.accent} />
+                <Text style={styles.toggleLabel}>{t.data_export}</Text>
+                <Feather name="chevron-right" size={17} color={c.iconMuted} />
+              </Pressable>
+              <Pressable
+                style={({ pressed }) => [styles.actionRow, pressed && styles.pressed]}
+                onPress={onImport}>
+                <Feather name="download" size={19} color={c.accent} />
+                <Text style={styles.toggleLabel}>{t.data_import}</Text>
+                <Feather name="chevron-right" size={17} color={c.iconMuted} />
+              </Pressable>
+            </View>
+            <Text style={styles.hint}>{t.data_hint}</Text>
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -141,4 +221,7 @@ const makeStyles = (c: AppColors) =>
     infoRowBorder: { borderBottomWidth: 1, borderBottomColor: c.divider },
     infoLabel: { fontFamily: fonts.regular, fontSize: 13, color: c.mutedText },
     infoValue: { fontFamily: fonts.semibold, fontSize: 13, color: c.text },
+    actionRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 13 },
+    pressed: { backgroundColor: c.pressed },
+    hint: { fontFamily: fonts.regular, fontSize: 12, color: c.mutedText, lineHeight: 18, marginTop: 8 },
   });

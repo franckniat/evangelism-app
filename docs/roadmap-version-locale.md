@@ -115,6 +115,12 @@ secteurs + calendrier + import contacts fonctionnent hors-ligne.
 écran de connexion ; le verrou biométrique fonctionne toujours.
 
 ### Étape 4 — Export / import des données (#40)
+> Code livré : `lib/backup.ts` (format et validation, testés), `lib/backup-file.ts`
+> (fichier, partage, sélection), section « Mes données » des réglages. Ni les
+> réglages de l'appareil ni la photo ne sont exportés ; les rappels sont
+> reprogrammés à l'import. **Reste à valider sur téléphone** : le système de
+> fichiers d'Expo n'existe pas sur le web.
+
 **But :** le filet de sécurité (téléphone perdu = tout perdu sinon).
 - Installer `expo-file-system`, `expo-sharing`, `expo-document-picker`.
 - Dans les **Réglages** : « Exporter mes données » → sérialise tout le stock

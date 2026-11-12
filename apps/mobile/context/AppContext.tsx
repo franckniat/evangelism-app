@@ -24,6 +24,7 @@ import {
 
 import { DICT, type Dict, type Lang } from '@/constants/i18n';
 import type { StatusKey } from '@/constants/status';
+import type { Sauvegarde } from '@/lib/backup';
 import { cancelReminder, scheduleVisitReminder } from '@/lib/notifications';
 import {
   DEFAULT_SETTINGS,
@@ -90,7 +91,8 @@ type Action =
   | { type: 'ADD_SECTOR'; sector: Sector }
   | { type: 'UPDATE_SECTOR'; id: string; patch: Partial<Sector> }
   | { type: 'DELETE_SECTOR'; id: string }
-  | { type: 'SET_NOTIFICATIONS'; notifications: AppNotification[] };
+  | { type: 'SET_NOTIFICATIONS'; notifications: AppNotification[] }
+  | { type: 'RESTORE'; profil: Evangelist | null; converts: Convert[]; sectors: Sector[] };
 
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
@@ -130,6 +132,15 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, sectors: state.sectors.filter((s) => s.id !== action.id) };
     case 'SET_NOTIFICATIONS':
       return { ...state, notifications: action.notifications };
+    case 'RESTORE':
+      return {
+        ...state,
+        profil: action.profil ?? state.profil,
+        converts: action.converts,
+        sectors: action.sectors,
+        introSeen: true,
+        needsSectorSetup: false,
+      };
     default:
       return state;
   }
@@ -202,6 +213,8 @@ type AppContextValue = {
   markNotifRead: (id: string) => void;
   markAllRead: () => void;
   clearNotifications: () => void;
+  // sauvegarde
+  restaurerSauvegarde: (sauvegarde: Sauvegarde) => void;
 };
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -582,6 +595,42 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [dispatch]
   );
 
+  /* ---------------------------------------------------------------- *
+   * Sauvegarde
+   * ---------------------------------------------------------------- */
+
+  /**
+   * Remplace les données du téléphone par celles d'une sauvegarde déjà
+   * validée. Remplacer, et non fusionner : réimporter le même fichier ne
+   * crée aucun doublon. Les réglages de l'appareil sont conservés.
+   *
+   * Les rappels de l'appareil d'origine n'existent pas ici : ceux en cours
+   * sont annulés, ceux des visites à venir reprogrammés. `reminderId` est
+   * une donnée de l'appareil, pas du suivi : il ne touche pas `updatedAt`.
+   */
+  const restaurerSauvegarde = useCallback(
+    (sauvegarde: Sauvegarde) => {
+      for (const c of latest.current.converts) void cancelReminder(c.reminderId);
+
+      dispatch({
+        type: 'RESTORE',
+        profil: sauvegarde.profil,
+        converts: sauvegarde.convertis,
+        sectors: sauvegarde.secteurs,
+      });
+
+      if (!latest.current.settings.notifOn) return;
+      void (async () => {
+        for (const c of sauvegarde.convertis) {
+          if (!c.nextVisit || c.done) continue;
+          const reminderId = await scheduleVisitReminder(c, t.notif_title);
+          if (reminderId) dispatch({ type: 'UPDATE_CONVERT', id: c.id, patch: { reminderId } });
+        }
+      })();
+    },
+    [dispatch, t]
+  );
+
   const unreadCount = useMemo(
     () => state.notifications.filter((n) => n.unread).length,
     [state.notifications]
@@ -626,6 +675,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     markNotifRead,
     markAllRead,
     clearNotifications,
+    restaurerSauvegarde,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
